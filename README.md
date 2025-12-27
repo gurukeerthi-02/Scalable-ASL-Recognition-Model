@@ -53,6 +53,7 @@ This repository contains a project for recognizing American Sign Language (ASL) 
 ## Combining MLP and LSTM for Hybrid Model
 - You can combine the predictions from both MLP and LSTM models to create a hybrid ASL recognition system
 - This can be done by implementing a decision-making mechanism that considers outputs from both models
+- Run the hybrid-realtime.py to check for the hybrid model function.
 
 ## Note
 - Ensure that your environment has access to a webcam for real-time testing
