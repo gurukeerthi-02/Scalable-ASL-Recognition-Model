@@ -1,6 +1,37 @@
-# ignore all the .npy files for building the data model
-dataset/**/*.npy
-motion-dataset/**/*.npy
+# Ignore all numpy files everywhere
+*.npy
+
+# Explicitly keep dataset and A–Z folders
+!dataset/
+!dataset/A/
+!dataset/B/
+!dataset/C/
+!dataset/D/
+!dataset/E/
+!dataset/F/
+!dataset/G/
+!dataset/H/
+!dataset/I/
+!dataset/K/
+!dataset/L/
+!dataset/M/
+!dataset/N/
+!dataset/O/
+!dataset/P/
+!dataset/Q/
+!dataset/R/
+!dataset/S/
+!dataset/T/
+!dataset/U/
+!dataset/V/
+!dataset/W/
+!dataset/X/
+!dataset/Y/
+
+!motion-dataset/
+!motion-dataset/J/
+!motion-dataset/no-gesture/
+!motion-dataset/Z/
 
 # ignore all the heavy weight models trained
 *.h5
