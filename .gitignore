@@ -1,0 +1,12 @@
+# ignore all the .npy files for building the data model
+*.npy
+
+# ignore all the heavy weight models trained
+*.h5
+
+# ignore virtual environment folder
+venv/
+
+# ignore the readme html file
+README.html
+
