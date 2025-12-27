@@ -1,5 +1,6 @@
 # ignore all the .npy files for building the data model
-*.npy
+dataset/**/*.npy
+motion-dataset/**/*.npy
 
 # ignore all the heavy weight models trained
 *.h5
