@@ -35,7 +35,7 @@ This repository contains a project for recognizing American Sign Language (ASL) 
 
 
 ## Collect the images for LSTM(Long Short-Term Memory)
-- Create subfolders for dynamic gestures like I,Z, etc in the dataset folder.
+- Create subfolders for dynamic gestures like I,Z,no-gesture in the motion-dataset folder.
 - Run the collect-motion-data.py by adjusting the required character using the controls provided in the terminal.
 - Collect around 200+ frames of 20 for each character.
 - Do it for no-gesture also to increase the model prediction and behaviour
@@ -49,4 +49,16 @@ This repository contains a project for recognizing American Sign Language (ASL) 
 - Run the real-time-lstm.py file to test the real-time ASL recognition for dynamic gestures using your webcam
 - Ensure your webcam is connected and functional
 - The model will predict the ASL dynamic gestures in real-time and display the results on the video feed
+
+## Combining MLP and LSTM for Hybrid Model
+- You can combine the predictions from both MLP and LSTM models to create a hybrid ASL recognition system
+- This can be done by implementing a decision-making mechanism that considers outputs from both models
+
+## Note
+- Ensure that your environment has access to a webcam for real-time testing
+- Adjust the parameters in the code files as needed for your specific use case
+- For better performance, consider using a GPU for training the models
+
+## License
+This project is licensed under the MIT License - see the LICENSE file for details.
 
