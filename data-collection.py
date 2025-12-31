@@ -3,7 +3,7 @@ import mediapipe as mp
 import numpy as np
 import os
 
-LABEL = "T"     # change this when collecting other gestures
+LABEL = "R"     # change this when collecting other gestures
 SAMPLES = 200
 
 SAVE_DIR = f"dataset/{LABEL}"

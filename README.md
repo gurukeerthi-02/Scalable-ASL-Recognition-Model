@@ -10,6 +10,27 @@ This repository contains a project for recognizing American Sign Language (ASL) 
 - opencv-python==4.8.1.78
 - mediapipe==0.10.7
 - scikit-learn==1.3.2
+- pyttsx3==2.90
+
+## Setting Up the Environment
+1. Clone the repository to your local machine:
+   ```bash
+   git clone
+    ```
+2. Navigate to the project directory:
+    ```bash
+    cd asl-recognition-hybrid-model
+    ```
+3. Create a virtual environment (optional but recommended):
+    ```bash
+    python -m venv venv
+    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+    ```    pip install -r requirements.txt
+    
+4. Install the required libraries using pip:
+    ```bash
+    pip install -r requirements.txt
+    
 
 
 ## Testing the Requirements
