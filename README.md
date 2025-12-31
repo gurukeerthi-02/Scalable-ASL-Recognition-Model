@@ -19,13 +19,12 @@ This repository contains a project for recognizing American Sign Language (ASL) 
     ```
 2. Navigate to the project directory:
     ```bash
-    cd asl-recognition-hybrid-model
+    cd asl-recog
     ```
 3. Create a virtual environment (optional but recommended):
     ```bash
     python -m venv venv
     source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-    ```    pip install -r requirements.txt
     
 4. Install the required libraries using pip:
     ```bash
