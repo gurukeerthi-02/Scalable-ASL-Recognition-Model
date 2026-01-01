@@ -29,6 +29,32 @@ This repository contains a project for recognizing American Sign Language (ASL) 
 4. Install the required libraries using pip:
     ```bash
     pip install -r requirements.txt
+    ```
+
+## How to Run It
+
+1. **Install Dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. **Start the Server:**
+   ```bash
+   python server.py
+   ```
+
+3. **Access from your PC:**
+   Open your browser and go to: `http://localhost:5000`
+
+4. **Access from Friends' PCs:**
+   * Find your local IP address (Run `ipconfig` on Windows, look for IPv4 Address, e.g., `192.168.1.5`).
+   * Tell your friends to open `http://192.168.1.5:5000` in their browser (assuming they are on the same Wi-Fi).
+   * **Note:** Browsers often block webcam access on non-HTTPS sites unless it is `localhost`. To fix this for a local test:
+     * **Chrome:** Go to `chrome://flags/#unsafely-treat-insecure-origin-as-secure`, enable it, and add `http://192.168.1.X:5000` to the list.
+     * **Alternative:** Use a tunneling service like **ngrok** to get a public HTTPS URL:
+       ```bash
+       ngrok http 5000
+       ```
     
 
 

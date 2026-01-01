@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ASL Recognition Server</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        body { background-color: #1a1a1a; color: white; font-family: sans-serif; text-align: center; }
+        #container { position: relative; display: inline-block; margin-top: 20px; }
+        #outputImage { border: 2px solid #00ff00; max-width: 100%; height: auto; }
+        #videoElement { display: none; } /* Hide raw video */
+        .controls { margin-top: 20px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; background: #333; color: white; border: 1px solid #555; }
+        button:hover { background: #555; }
+    </style>
+</head>
+<body>
+    <h1>Real-Time ASL Recognition</h1>
+    <div id="container">
+        <img id="outputImage" src="" alt="Waiting for stream...">
+    </div>
+    
+    <video id="videoElement" autoplay playsinline></video>
+    <canvas id="canvasElement" style="display:none;"></canvas>
+
+    <div class="controls">
+        <p>Controls: SPACE (Add Space) | BACKSPACE (Delete) | ENTER (Speak) | C (Clear)</p>
+        <button onclick="sendCommand('space')">Space</button>
+        <button onclick="sendCommand('backspace')">Backspace</button>
+        <button onclick="sendCommand('enter')">Speak</button>
+        <button onclick="sendCommand('clear')">Clear</button>
+    </div>
+
+    <script>
+        const socket = io();
+        const video = document.getElementById('videoElement');
+        const canvas = document.getElementById('canvasElement');
+        const ctx = canvas.getContext('2d');
+        const outputImage = document.getElementById('outputImage');
+
+        // Access Webcam
+        navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } })
+            .then(stream => {
+                video.srcObject = stream;
+                setInterval(sendFrame, 100); // Send frame every 100ms (10 FPS)
+            })
+            .catch(err => console.error("Error accessing webcam:", err));
+
+        function sendFrame() {
+            if (!video.videoWidth) return;
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            const dataURL = canvas.toDataURL('image/jpeg', 0.5); // Compress to 0.5 quality
+            socket.emit('process_frame', { image: dataURL });
+        }
+
+        // Receive processed frame
+        socket.on('response_frame', (data) => {
+            outputImage.src = "data:image/jpeg;base64," + data.image;
+        });
+
+        // Handle Text-to-Speech
+        socket.on('speak', (data) => {
+            const utterance = new SpeechSynthesisUtterance(data.text);
+            window.speechSynthesis.speak(utterance);
+        });
+
+        // Keyboard Controls
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') sendCommand('space');
+            else if (e.code === 'Backspace') sendCommand('backspace');
+            else if (e.code === 'Enter') sendCommand('enter');
+            else if (e.key.toLowerCase() === 'c') sendCommand('clear');
+        });
+
+        function sendCommand(cmd) {
+            socket.emit('command', { cmd: cmd });
+        }
+    </script>
+</body>
+</html>
