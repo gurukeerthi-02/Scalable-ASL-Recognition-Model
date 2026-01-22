@@ -3,10 +3,10 @@ import mediapipe as mp
 import numpy as np
 import os
 
-LABEL = "R"     # change this when collecting other gestures
-SAMPLES = 200
+LABEL = "Y"     # change this when collecting other gestures
+SAMPLES = 1000
 
-SAVE_DIR = f"dataset/{LABEL}"
+SAVE_DIR = f"../dataset/{LABEL}"
 os.makedirs(SAVE_DIR, exist_ok=True)
 
 cap = cv2.VideoCapture(0)

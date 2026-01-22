@@ -7,11 +7,12 @@ import time
 
 # ---------------- CONFIG ----------------
 SEQUENCE_LENGTH = 30
-DATASET_DIR = "motion-dataset"
+DATASET_DIR = "../motion-dataset"
+
 CLASSES = {
-    0: "no-gesture",
     1: "Z",
-    2: "J"
+    2: "J",
+    3: "Hello"
 }
 
 os.makedirs(DATASET_DIR, exist_ok=True)
@@ -32,19 +33,28 @@ cap = cv2.VideoCapture(0)
 motion_buffer = deque(maxlen=SEQUENCE_LENGTH)
 
 current_label = None
-sample_count = {c: len(os.listdir(os.path.join(DATASET_DIR, c))) for c in CLASSES.values()}
+sample_count = {
+    c: len(os.listdir(os.path.join(DATASET_DIR, c)))
+    for c in CLASSES.values()
+}
 
 print("Controls:")
-print("0 → No Gesture")
 print("1 → Z")
 print("2 → J")
+print("3 → Hello")
+print("s → Save sequence")
 print("q → Quit")
 
 # ---------------- FEATURE EXTRACTION ----------------
 def extract_features(hand_landmarks):
+    base = hand_landmarks.landmark[0]  # wrist
     features = []
     for lm in hand_landmarks.landmark:
-        features.extend([lm.x, lm.y, lm.z])
+        features.extend([
+            lm.x - base.x,
+            lm.y - base.y,
+            lm.z - base.z
+        ])
     return np.array(features)
 
 # ---------------- MAIN LOOP ----------------
@@ -64,7 +74,6 @@ while True:
         features = extract_features(hand_landmarks)
         motion_buffer.append(features)
 
-    # ---------------- UI ----------------
     label_text = "None" if current_label is None else CLASSES[current_label]
     cv2.putText(frame, f"Recording: {label_text}", (20, 40),
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
@@ -76,8 +85,7 @@ while True:
 
     key = cv2.waitKey(1) & 0xFF
 
-    # ---------------- KEY CONTROLS ----------------
-    if key in [ord('0'), ord('1'), ord('2')]:
+    if key in [ord('1'), ord('2'), ord('3')]:
         current_label = int(chr(key))
         motion_buffer.clear()
         print(f"Switched to class: {CLASSES[current_label]}")

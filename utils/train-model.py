@@ -6,7 +6,7 @@ y = [] # our labels - get our output labels (A,B,C...)
 
 
 # setting our dataset path and fetching the available labels
-dataset_path = "dataset"
+dataset_path = "../dataset"
 labels = os.listdir(dataset_path)
 print("Labels found: ",labels)
 
@@ -77,14 +77,40 @@ model.compile(
 )
 
 
-model.fit(
+import time
+
+start_time = time.time()
+history = model.fit(
     X,y,
-    epochs=30,
+    epochs=50,
     batch_size=32,
-    shuffle=True
+    shuffle=True,
+    validation_split=0.2
 )
+end_time = time.time()
+training_time = (end_time - start_time) / 60
 
-
-model.save("gesture_model.h5")
+model.save("../models/static_model.h5")
 print("Model saved successfully !")
+
+# =========================
+# Performance Metrics
+# =========================
+
+final_accuracy = history.history['accuracy'][-1]
+val_accuracy = history.history['val_accuracy'][-1]
+best_val_acc = max(history.history['val_accuracy'])
+best_epoch = np.argmax(history.history['val_accuracy']) + 1
+
+print("\n" + "="*40)
+print("TRAINING PERFORMANCE SUMMARY (STATIC)")
+print("="*40)
+print(f"Training Time           : {training_time:.2f} min")
+print(f"Training Accuracy       : {final_accuracy * 100:.2f}%")
+print(f"Validation Accuracy     : {val_accuracy * 100:.2f}%")
+print(f"Best Val Accuracy       : {best_val_acc * 100:.2f}% (at epoch {best_epoch})")
+print(f"Final Training Loss     : {history.history['loss'][-1]:.4f}")
+print("="*40)
+
+
 

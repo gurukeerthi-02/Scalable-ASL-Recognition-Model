@@ -1,0 +1,66 @@
+2026-01-22 19:13:00.010515: I tensorflow/core/util/port.cc:113] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING:tensorflow:From C:\Users\Asus\AppData\Local\Programs\Python\Python310\lib\site-packages\keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2026-01-22 19:13:09.184446: I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: SSE SSE2 SSE3 SSE4.1 SSE4.2 AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING:tensorflow:From C:\Users\Asus\AppData\Local\Programs\Python\Python310\lib\site-packages\keras\src\backend.py:1398: The name tf.executing_eagerly_outside_functions is deprecated. Please use tf.compat.v1.executing_eagerly_outside_functions instead.
+
+Labels found: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y']
+Label map: {'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5, 'G': 6, 'H': 7, 'I': 8, 'K': 9, 'L': 10, 'M': 11, 'N': 12, 'O': 13, 'P': 14, 'Q': 15, 'R': 16, 'S': 17, 'T': 18, 'U': 19, 'V': 20, 'W': 21, 'X': 22, 'Y': 23}
+X shape: (24000, 68)
+y shape: (24000,)
+One-hot encoded labels shape: (24000, 24)
+Rigorous Split: 19200 training, 4800 test samples
+Model loaded successfully
+
+  1/150 [..............................] - ETA: 13s
+ 38/150 [======>.......................] - ETA: 0s 
+ 78/150 [==============>...............] - ETA: 0s
+115/150 [======================>.......] - ETA: 0s
+150/150 [==============================] - 0s 1ms/step
+
+=== CLASSIFICATION REPORT ===
+              precision    recall  f1-score   support
+
+           A       1.00      1.00      1.00       200
+           B       1.00      1.00      1.00       205
+           C       1.00      1.00      1.00       192
+           D       1.00      1.00      1.00       191
+           E       1.00      1.00      1.00       201
+           F       1.00      1.00      1.00       209
+           G       1.00      1.00      1.00       197
+           H       1.00      1.00      1.00       183
+           I       1.00      1.00      1.00       177
+           K       1.00      1.00      1.00       180
+           L       1.00      1.00      1.00       209
+           M       1.00      1.00      1.00       216
+           N       1.00      1.00      1.00       202
+           O       1.00      1.00      1.00       198
+           P       1.00      1.00      1.00       182
+           Q       1.00      1.00      1.00       192
+           R       1.00      1.00      1.00       195
+           S       1.00      1.00      1.00       191
+           T       1.00      1.00      1.00       201
+           U       1.00      1.00      1.00       214
+           V       1.00      1.00      1.00       206
+           W       1.00      1.00      1.00       215
+           X       1.00      1.00      1.00       220
+           Y       1.00      1.00      1.00       224
+
+    accuracy                           1.00      4800
+   macro avg       1.00      1.00      1.00      4800
+weighted avg       1.00      1.00      1.00      4800
+
+
+========================================
+TABLE I: STATIC GESTURE RECOGNITION PERFORMANCE
+========================================
+Test Accuracy           : 100.00%
+Precision (Macro Avg.)  : 1.000
+Recall (Macro Avg.)     : 1.000
+F1-Score (Macro Avg.)    : 1.000
+
+Per-Class Performance Highlights:
+Best performing  : Y (100.0%), X (100.0%)
+Most challenging : A (100.0%), B (100.0%)
+========================================

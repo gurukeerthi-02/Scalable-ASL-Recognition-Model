@@ -1,0 +1,45 @@
+2026-01-22 19:13:25.848442: I tensorflow/core/util/port.cc:113] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING:tensorflow:From C:\Users\Asus\AppData\Local\Programs\Python\Python310\lib\site-packages\keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2026-01-22 19:13:31.484615: I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: SSE SSE2 SSE3 SSE4.1 SSE4.2 AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING:tensorflow:From C:\Users\Asus\AppData\Local\Programs\Python\Python310\lib\site-packages\keras\src\backend.py:1398: The name tf.executing_eagerly_outside_functions is deprecated. Please use tf.compat.v1.executing_eagerly_outside_functions instead.
+
+Label map: {'Hello': 0, 'J': 1, 'Z': 2}
+X shape: (303, 30, 126)
+y shape: (303,)
+Model loaded successfully
+
+Running evaluation...
+
+1/2 [==============>...............] - ETA: 0s
+2/2 [==============================] - 1s 9ms/step
+Unique y_test labels: [0 1 2]
+Unique y_pred labels: [0 1 2]
+
+Test Accuracy: 100.00%
+
+=== CLASSIFICATION REPORT ===
+              precision    recall  f1-score   support
+
+       Hello       1.00      1.00      1.00        20
+           J       1.00      1.00      1.00        20
+           Z       1.00      1.00      1.00        21
+
+    accuracy                           1.00        61
+   macro avg       1.00      1.00      1.00        61
+weighted avg       1.00      1.00      1.00        61
+
+
+========================================
+TABLE II: DYNAMIC GESTURE RECOGNITION PERFORMANCE
+========================================
+Test Accuracy           : 100.00%
+Precision (Macro Avg.)  : 1.000
+Recall (Macro Avg.)     : 1.000
+F1-Score (Macro Avg.)    : 1.000
+
+Per-Class Performance Highlights:
+Best performing  : Z (100.0%), J (100.0%)
+Most challenging : Hello (100.0%), J (100.0%)
+========================================

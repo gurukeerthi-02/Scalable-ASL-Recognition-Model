@@ -1,44 +1,61 @@
-# Ignore all numpy files everywhere
-*.npy
-
-# Explicitly keep dataset and A–Z folders
-!dataset/
-!dataset/A/
-!dataset/B/
-!dataset/C/
-!dataset/D/
-!dataset/E/
-!dataset/F/
-!dataset/G/
-!dataset/H/
-!dataset/I/
-!dataset/K/
-!dataset/L/
-!dataset/M/
-!dataset/N/
-!dataset/O/
-!dataset/P/
-!dataset/Q/
-!dataset/R/
-!dataset/S/
-!dataset/T/
-!dataset/U/
-!dataset/V/
-!dataset/W/
-!dataset/X/
-!dataset/Y/
-
-!motion-dataset/
-!motion-dataset/J/
-!motion-dataset/no-gesture/
-!motion-dataset/Z/
-
-# ignore all the heavy weight models trained
-*.h5
-
-# ignore virtual environment folder
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 venv/
+ENV/
 
-# ignore the readme html file
+# Node.js
+node_modules/
+asl-meet/node_modules/
+asl-meet/.next/
+asl-meet/out/
+asl-meet/build/
+asl-meet/*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Models & Data (Keeping datasets as per original)
+*.npy
+*.h5
+!dataset/
+!motion-dataset/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+asl-meet/.env*.local
+
+# IDEs & Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Misc
 README.html
 
