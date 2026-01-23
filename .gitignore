@@ -39,6 +39,7 @@ yarn-error.log*
 *.h5
 !dataset/
 !motion-dataset/
+!improved_dataset/
 
 # Environment files
 .env
@@ -58,4 +59,7 @@ Thumbs.db
 
 # Misc
 README.html
+
+# temporary files
+asl-meet/
 

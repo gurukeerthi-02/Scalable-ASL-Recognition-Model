@@ -1,0 +1,63 @@
+2026-01-23 16:18:42,843 [WARNING] From D:\FinalYearProject\Asl-Recog\venv\lib\site-packages\keras\src\backend.py:1398: The name tf.executing_eagerly_outside_functions is deprecated. Please use tf.compat.v1.executing_eagerly_outside_functions instead.
+
+2026-01-23 16:20:27,601 [ERROR] message handler error
+Traceback (most recent call last):
+  File "D:\FinalYearProject\Asl-Recog\venv\lib\site-packages\engineio\server.py", line 450, in run_handler
+    return self.handlers[event](*args)
+  File "D:\FinalYearProject\Asl-Recog\venv\lib\site-packages\socketio\server.py", line 655, in _handle_eio_message
+    self._handle_connect(eio_sid, pkt.namespace, pkt.data)
+  File "D:\FinalYearProject\Asl-Recog\venv\lib\site-packages\socketio\server.py", line 538, in _handle_connect
+    success = self._trigger_event(
+  File "D:\FinalYearProject\Asl-Recog\venv\lib\site-packages\socketio\server.py", line 620, in _trigger_event
+    return handler(*args)
+  File "D:\FinalYearProject\Asl-Recog\venv\lib\site-packages\flask_socketio\__init__.py", line 282, in _handler
+    return self._handle_event(handler, message, namespace, sid,
+  File "D:\FinalYearProject\Asl-Recog\venv\lib\site-packages\flask_socketio\__init__.py", line 823, in _handle_event
+    ret = handler(auth)
+  File "D:\FinalYearProject\Asl-Recog\server.py", line 352, in connect
+    sessions[request.sid] = ASLSession()
+  File "D:\FinalYearProject\Asl-Recog\server.py", line 103, in __init__
+    "session_start": now
+NameError: name 'now' is not defined
+2026-01-23 16:21:24,026 [ERROR] message handler error
+Traceback (most recent call last):
+  File "D:\FinalYearProject\Asl-Recog\venv\lib\site-packages\engineio\server.py", line 450, in run_handler
+    return self.handlers[event](*args)
+  File "D:\FinalYearProject\Asl-Recog\venv\lib\site-packages\socketio\server.py", line 655, in _handle_eio_message
+    self._handle_connect(eio_sid, pkt.namespace, pkt.data)
+  File "D:\FinalYearProject\Asl-Recog\venv\lib\site-packages\socketio\server.py", line 538, in _handle_connect
+    success = self._trigger_event(
+  File "D:\FinalYearProject\Asl-Recog\venv\lib\site-packages\socketio\server.py", line 620, in _trigger_event
+    return handler(*args)
+  File "D:\FinalYearProject\Asl-Recog\venv\lib\site-packages\flask_socketio\__init__.py", line 282, in _handler
+    return self._handle_event(handler, message, namespace, sid,
+  File "D:\FinalYearProject\Asl-Recog\venv\lib\site-packages\flask_socketio\__init__.py", line 823, in _handle_event
+    ret = handler(auth)
+  File "D:\FinalYearProject\Asl-Recog\server.py", line 352, in connect
+    sessions[request.sid] = ASLSession()
+  File "D:\FinalYearProject\Asl-Recog\server.py", line 103, in __init__
+    "session_start": time.time()
+NameError: name 'now' is not defined
+2026-01-23 16:21:28,346 [ERROR] message handler error
+Traceback (most recent call last):
+  File "D:\FinalYearProject\Asl-Recog\venv\lib\site-packages\engineio\server.py", line 450, in run_handler
+    return self.handlers[event](*args)
+  File "D:\FinalYearProject\Asl-Recog\venv\lib\site-packages\socketio\server.py", line 655, in _handle_eio_message
+    self._handle_connect(eio_sid, pkt.namespace, pkt.data)
+  File "D:\FinalYearProject\Asl-Recog\venv\lib\site-packages\socketio\server.py", line 538, in _handle_connect
+    success = self._trigger_event(
+  File "D:\FinalYearProject\Asl-Recog\venv\lib\site-packages\socketio\server.py", line 620, in _trigger_event
+    return handler(*args)
+  File "D:\FinalYearProject\Asl-Recog\venv\lib\site-packages\flask_socketio\__init__.py", line 282, in _handler
+    return self._handle_event(handler, message, namespace, sid,
+  File "D:\FinalYearProject\Asl-Recog\venv\lib\site-packages\flask_socketio\__init__.py", line 823, in _handle_event
+    ret = handler(auth)
+  File "D:\FinalYearProject\Asl-Recog\server.py", line 352, in connect
+    sessions[request.sid] = ASLSession()
+  File "D:\FinalYearProject\Asl-Recog\server.py", line 103, in __init__
+    "session_start": time.time()
+NameError: name 'now' is not defined
+2026-01-23 16:22:23,481 [WARNING] From D:\FinalYearProject\Asl-Recog\venv\lib\site-packages\keras\src\backend.py:1398: The name tf.executing_eagerly_outside_functions is deprecated. Please use tf.compat.v1.executing_eagerly_outside_functions instead.
+
+2026-01-23 16:22:24,439 [INFO] New ASL session initialized
+2026-01-23 16:23:09,432 [INFO] New ASL session initialized

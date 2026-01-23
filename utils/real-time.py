@@ -3,13 +3,17 @@ import mediapipe as mp
 import numpy as np
 from tensorflow.keras.models import load_model
 import os
+import time
 
-model = load_model("gesture_model.h5")
+model = load_model("../models/gesture_model.h5")
 print("Model loaded successfully !")
 
-dataset_path = "dataset"
+dataset_path = "../dataset"
 labels = sorted(os.listdir(dataset_path))
 print("Labels: ",labels)
+
+print("Starting generalization testing...")
+predictions = []
 
 
 capture = cv.VideoCapture(0)
@@ -17,8 +21,8 @@ capture = cv.VideoCapture(0)
 mp_hands = mp.solutions.hands
 hands = mp_hands.Hands(
     max_num_hands = 1,
-    min_detection_confidence=0.7,
-    min_tracking_confidence=0.7
+    min_detection_confidence=0.9,
+    min_tracking_confidence=0.9
 )
 
 mp_draw = mp.solutions.drawing_utils
@@ -73,9 +77,15 @@ while True:
         
         features = np.array(features).reshape(1, -1)
 
-        prediciton = model.predict(features, verbose=0)
-        predicted_index = np.argmax(prediciton)
-        predicted_label = labels[predicted_index]
+        for i in range(10):
+            prediciton = model.predict(features, verbose=0)
+            predicted_index = np.argmax(prediciton)
+            predicted_label = labels[predicted_index]
+            predictions.append(predicted_label)
+            time.sleep(1)
+
+        accuracy = predictions.count('A') / 10
+        print(f"Accuracy for 'A': {accuracy * 100}%")
 
 
         confidence = prediciton[0][predicted_index]
