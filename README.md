@@ -2,7 +2,6 @@
 This repository contains a project for recognizing American Sign Language (ASL) gestures using a hybrid model that combines Multi-Layer Perceptron (MLP) and Long Short-Term Memory (LSTM) networks. The project leverages the Mediapipe library for hand landmark detection and extraction of features from video input.
 
 ## Requirements (Mandatory)
-- Python 3.10.11
 - numpy==1.26.4
 - tensorflow==2.15.0
 - pandas==2.1.4
@@ -11,6 +10,11 @@ This repository contains a project for recognizing American Sign Language (ASL) 
 - mediapipe==0.10.7
 - scikit-learn==1.3.2
 - pyttsx3==2.90
+- flask==3.0.0
+- flask-socketio==5.3.6
+- eventlet==0.33.3
+- flask-cors==4.0.0
+- seaborn==0.13.2
 
 ## Setting Up the Environment
 1. Clone the repository to your local machine:
@@ -46,20 +50,8 @@ This repository contains a project for recognizing American Sign Language (ASL) 
 3. **Access from your PC:**
    Open your browser and go to: `http://localhost:5000`
 
-4. **Access from Friends' PCs:**
-   * Find your local IP address (Run `ipconfig` on Windows, look for IPv4 Address, e.g., `192.168.1.5`).
-   * Tell your friends to open `http://192.168.1.5:5000` in their browser (assuming they are on the same Wi-Fi).
-   * **Note:** Browsers often block webcam access on non-HTTPS sites unless it is `localhost`. To fix this for a local test:
-     * **Chrome:** Go to `chrome://flags/#unsafely-treat-insecure-origin-as-secure`, enable it, and add `http://192.168.1.X:5000` to the list.
-     * **Alternative:** Use a tunneling service like **ngrok** to get a public HTTPS URL:
-       ```bash
-       ngrok http 5000
-       ```
-    
-
-
 ## Testing the Requirements
-- To ensure all the libraries are correctly installed, run the hand-landmarks.py file to check for the mediapipe feature working.
+- To ensure all the libraries are correctly installed, run the hand-landmarks.py file to check for the mediapipe feature working in the learning folder.
 - Also check the terminal whether the features are being extracted in terms of X,Y and Z along with the total feature count **(21*3=63).**
 
 ## Collecting the images for MLP(Multi Layer Perceptron)
