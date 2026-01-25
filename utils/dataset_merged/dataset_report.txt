@@ -1,0 +1,225 @@
+======================================================================
+MERGED DATASET REPORT
+======================================================================
+
+Total People:    4
+Total Labels:    24
+Total Samples:   19,200
+Avg per Label:   800
+
+----------------------------------------------------------------------
+CONTRIBUTORS
+----------------------------------------------------------------------
+a.mohamed aashiq    :  4800 samples
+guru                :  4800 samples
+neeharika (1)       :  4800 samples
+vishal b            :  4800 samples
+
+----------------------------------------------------------------------
+PER-LABEL BREAKDOWN
+----------------------------------------------------------------------
+
+Letter 'A':
+  Total: 800 samples
+  Contributors: 4
+    • a.mohamed aashiq: 200 samples
+    • guru: 200 samples
+    • neeharika (1): 200 samples
+    • vishal b: 200 samples
+
+Letter 'B':
+  Total: 800 samples
+  Contributors: 4
+    • a.mohamed aashiq: 200 samples
+    • guru: 200 samples
+    • neeharika (1): 200 samples
+    • vishal b: 200 samples
+
+Letter 'C':
+  Total: 800 samples
+  Contributors: 4
+    • a.mohamed aashiq: 200 samples
+    • guru: 200 samples
+    • neeharika (1): 200 samples
+    • vishal b: 200 samples
+
+Letter 'D':
+  Total: 800 samples
+  Contributors: 4
+    • a.mohamed aashiq: 200 samples
+    • guru: 200 samples
+    • neeharika (1): 200 samples
+    • vishal b: 200 samples
+
+Letter 'E':
+  Total: 800 samples
+  Contributors: 4
+    • a.mohamed aashiq: 200 samples
+    • guru: 200 samples
+    • neeharika (1): 200 samples
+    • vishal b: 200 samples
+
+Letter 'F':
+  Total: 800 samples
+  Contributors: 4
+    • a.mohamed aashiq: 200 samples
+    • guru: 200 samples
+    • neeharika (1): 200 samples
+    • vishal b: 200 samples
+
+Letter 'G':
+  Total: 800 samples
+  Contributors: 4
+    • a.mohamed aashiq: 200 samples
+    • guru: 200 samples
+    • neeharika (1): 200 samples
+    • vishal b: 200 samples
+
+Letter 'H':
+  Total: 800 samples
+  Contributors: 4
+    • a.mohamed aashiq: 200 samples
+    • guru: 200 samples
+    • neeharika (1): 200 samples
+    • vishal b: 200 samples
+
+Letter 'I':
+  Total: 800 samples
+  Contributors: 4
+    • a.mohamed aashiq: 200 samples
+    • guru: 200 samples
+    • neeharika (1): 200 samples
+    • vishal b: 200 samples
+
+Letter 'K':
+  Total: 800 samples
+  Contributors: 4
+    • a.mohamed aashiq: 200 samples
+    • guru: 200 samples
+    • neeharika (1): 200 samples
+    • vishal b: 200 samples
+
+Letter 'L':
+  Total: 800 samples
+  Contributors: 4
+    • a.mohamed aashiq: 200 samples
+    • guru: 200 samples
+    • neeharika (1): 200 samples
+    • vishal b: 200 samples
+
+Letter 'M':
+  Total: 800 samples
+  Contributors: 4
+    • a.mohamed aashiq: 200 samples
+    • guru: 200 samples
+    • neeharika (1): 200 samples
+    • vishal b: 200 samples
+
+Letter 'N':
+  Total: 800 samples
+  Contributors: 4
+    • a.mohamed aashiq: 200 samples
+    • guru: 200 samples
+    • neeharika (1): 200 samples
+    • vishal b: 200 samples
+
+Letter 'O':
+  Total: 800 samples
+  Contributors: 4
+    • a.mohamed aashiq: 200 samples
+    • guru: 200 samples
+    • neeharika (1): 200 samples
+    • vishal b: 200 samples
+
+Letter 'P':
+  Total: 800 samples
+  Contributors: 4
+    • a.mohamed aashiq: 200 samples
+    • guru: 200 samples
+    • neeharika (1): 200 samples
+    • vishal b: 200 samples
+
+Letter 'Q':
+  Total: 800 samples
+  Contributors: 4
+    • a.mohamed aashiq: 200 samples
+    • guru: 200 samples
+    • neeharika (1): 200 samples
+    • vishal b: 200 samples
+
+Letter 'R':
+  Total: 800 samples
+  Contributors: 4
+    • a.mohamed aashiq: 200 samples
+    • guru: 200 samples
+    • neeharika (1): 200 samples
+    • vishal b: 200 samples
+
+Letter 'S':
+  Total: 800 samples
+  Contributors: 4
+    • a.mohamed aashiq: 200 samples
+    • guru: 200 samples
+    • neeharika (1): 200 samples
+    • vishal b: 200 samples
+
+Letter 'T':
+  Total: 800 samples
+  Contributors: 4
+    • a.mohamed aashiq: 200 samples
+    • guru: 200 samples
+    • neeharika (1): 200 samples
+    • vishal b: 200 samples
+
+Letter 'U':
+  Total: 800 samples
+  Contributors: 4
+    • a.mohamed aashiq: 200 samples
+    • guru: 200 samples
+    • neeharika (1): 200 samples
+    • vishal b: 200 samples
+
+Letter 'V':
+  Total: 800 samples
+  Contributors: 4
+    • a.mohamed aashiq: 200 samples
+    • guru: 200 samples
+    • neeharika (1): 200 samples
+    • vishal b: 200 samples
+
+Letter 'W':
+  Total: 800 samples
+  Contributors: 4
+    • a.mohamed aashiq: 200 samples
+    • guru: 200 samples
+    • neeharika (1): 200 samples
+    • vishal b: 200 samples
+
+Letter 'X':
+  Total: 800 samples
+  Contributors: 4
+    • a.mohamed aashiq: 200 samples
+    • guru: 200 samples
+    • neeharika (1): 200 samples
+    • vishal b: 200 samples
+
+Letter 'Y':
+  Total: 800 samples
+  Contributors: 4
+    • a.mohamed aashiq: 200 samples
+    • guru: 200 samples
+    • neeharika (1): 200 samples
+    • vishal b: 200 samples
+
+======================================================================
+RECOMMENDATIONS FOR TRAINING
+======================================================================
+
+✓ GOOD: You have data from 3+ people
+  Suggested split:
+    Training:   a.mohamed aashiq, guru
+    Validation: neeharika (1)
+    Testing:    vishal b
+
+✓ GOOD: Dataset is well balanced
+

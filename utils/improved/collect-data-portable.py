@@ -53,7 +53,7 @@ def setup_collection():
 def create_info_file(base_dir, person_id):
     """Create info file with metadata"""
     info_path = os.path.join(base_dir, "collection_info.txt")
-    with open(info_path, 'w') as f:
+    with open(info_path, 'w', encoding='utf-8') as f:
         f.write(f"Collector: {person_id}\n")
         f.write(f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
         f.write(f"Labels: {', '.join(ALL_LABELS)}\n")

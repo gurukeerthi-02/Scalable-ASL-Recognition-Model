@@ -40,6 +40,8 @@ yarn-error.log*
 !dataset/
 !motion-dataset/
 !improved_dataset/
+!utils/dataset_merged/
+!models/
 
 # Environment files
 .env
@@ -65,3 +67,6 @@ asl-meet/
 
 # files and folders to be ignored
 Review_Paper_Draft.md
+
+# zip files
+*.zip

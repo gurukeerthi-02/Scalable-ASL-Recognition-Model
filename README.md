@@ -1,103 +1,100 @@
-# Scalable ASL-Recognition with MLP along with LSTM (hybrid model) and Mediapipe
-This repository contains a project for recognizing American Sign Language (ASL) gestures using a hybrid model that combines Multi-Layer Perceptron (MLP) and Long Short-Term Memory (LSTM) networks. The project leverages the Mediapipe library for hand landmark detection and extraction of features from video input.
+# Scalable ASL Recognition System (Backend & Models)
 
-## Requirements (Mandatory)
-- numpy==1.26.4
-- tensorflow==2.15.0
-- pandas==2.1.4
-- protobuf==3.20.3
-- opencv-python==4.8.1.78
-- mediapipe==0.10.7
-- scikit-learn==1.3.2
-- pyttsx3==2.90
-- flask==3.0.0
-- flask-socketio==5.3.6
-- eventlet==0.33.3
-- flask-cors==4.0.0
-- seaborn==0.13.2
+This repository hosts the backend and machine learning components for a scalable American Sign Language (ASL) recognition system. The system employs a hybrid architecture combining **Multi-Layer Perceptron (MLP)** for static gestures and **Long Short-Term Memory (LSTM)** networks for dynamic gestures, leveraging **Mediapipe** for robust hand landmark extraction.
 
-## Setting Up the Environment
-1. Clone the repository to your local machine:
-   ```bash
-   git clone
-    ```
-2. Navigate to the project directory:
-    ```bash
-    cd asl-recog
-    ```
-3. Create a virtual environment (optional but recommended):
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-    
-4. Install the required libraries using pip:
-    ```bash
-    pip install -r requirements.txt
-    ```
+## 📂 Project Structure
 
-## How to Run It
+- **`server.py`**: The main Flask + Socket.IO backend server. Handles real-time video stream processing and inference.
+- **`utils/improved/`**: Contains the latest, robust scripts for the development workflow (collection, training, testing).
+- **`utils/models/`**: Storage for trained model artifacts.(empty)
+- **`utils/dataset_merged/`**: The consolidated dataset used for training.(empty)
 
-1. **Install Dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
+---
 
-2. **Start the Server:**
-   ```bash
-   python server.py
-   ```
+## 🧠 Trained Models
 
-3. **Access from your PC:**
-   Open your browser and go to: `http://localhost:5000`
+### 1. Static Gesture Model (MLP)
+- **Architecture**: Deep Neural Network (MLP) with Dropout and BatchNormalization.
+- **Input**: 68 normalized features (Relative (x,y,z) coordinates + Euclidean distances between fingertips and palm).
+- **Training Strategy**: **Person-Based Split**.
+    - Ensures that the training, validation, and test sets contain data from *different* people to prevent overfitting and ensure real-world generalization.
+- **Classes**: A-Z (Static alphabet excluding J and Z).
 
-## Testing the Requirements
-- To ensure all the libraries are correctly installed, run the hand-landmarks.py file to check for the mediapipe feature working in the learning folder.
-- Also check the terminal whether the features are being extracted in terms of X,Y and Z along with the total feature count **(21*3=63).**
+### 2. Dynamic Gesture Model (LSTM)
+- **Architecture**: LSTM for temporal sequence analysis.
+- **Input**: Sequence of 30 frames (x, y, z coordinates).
+- **Classes**: Dynamic words like "Hello", "J", "Z".
 
-## Collecting the images for MLP(Multi Layer Perceptron)
-- Create a folder named dataset
-- Create subfolders for static gestures like A,B,C...
-- Run the data-collection.py by adjusting the required character in the code line 6
-- Collect around 200-300 images to get more refined training data
-- **Ensure the features count is 68**
+---
 
-## Training the MLP Model
-- Run the training.py file to train the model on the collected dataset
-- The model will be saved as asl_model.h5 after training
+## 🚀 Running the Backend
 
-## Real-Time ASL Recognition
-- Run the asl_recognition.py file to test the real-time ASL recognition using your webcam
-- Ensure your webcam is connected and functional
-- The model will predict the ASL gestures in real-time and display the results on the video feed
-- You can adjust the confidence threshold in the code to improve accuracy
+### 1. Prerequisites
+Install the required dependencies:
+```bash
+pip install -r requirements.txt
+```
 
+### 2. Model Setup
+Ensure the trained models are placed where `server.py` expects them (create a `models` folder in the root if it doesn't exist):
+```bash
+# Example setup
+mkdir models
+cp utils/models/static_model_person_split_v1.h5 models/gesture_model.h5
+# Copy the LSTM model similarly
+```
 
-## Collect the images for LSTM(Long Short-Term Memory)
-- Create subfolders for dynamic gestures like I,Z,no-gesture in the motion-dataset folder.
-- Run the collect-motion-data.py by adjusting the required character using the controls provided in the terminal.
-- Collect around 200+ frames of 20 for each character.
-- Do it for no-gesture also to increase the model prediction and behaviour
-- **Ensure the feature count is 63**
+### 3. Start the Server
+Run the Flask server to start the backend with Socket.IO support:
+```bash
+python server.py
+```
+The server will start on `http://0.0.0.0:5000`.
 
-## Training the LSTM Model
-- Run the train-lstm.py file to train the model on the collected motion dataset
-- The model will be saved as z_j_lstm_model.h5 after training
+---
 
-## Real-Time ASL Recognition for LSTM
-- Run the real-time-lstm.py file to test the real-time ASL recognition for dynamic gestures using your webcam
-- Ensure your webcam is connected and functional
-- The model will predict the ASL dynamic gestures in real-time and display the results on the video feed
+## 🛠️ Development Workflow
 
-## Combining MLP and LSTM for Hybrid Model
-- You can combine the predictions from both MLP and LSTM models to create a hybrid ASL recognition system
-- This can be done by implementing a decision-making mechanism that considers outputs from both models
-- Run the hybrid-realtime.py to check for the hybrid model function.
+The `utils/improved/` directory contains the complete pipeline for building and improving the models.
 
-## Note
-- Ensure that your environment has access to a webcam for real-time testing
-- Adjust the parameters in the code files as needed for your specific use case
-- For better performance, consider using a GPU for training the models
+### Step 1: Data Collection
+Collect high-quality data using the portable collector. This script captures landmarks for specific gestures.
+```bash
+# Coordinate to utils/improved directory
+cd utils/improved
 
-## License
-This project is licensed under the MIT License - see the LICENSE file for details.
+# Run the collector
+python collect-data-portable.py
+```
+*Follow the on-screen prompts to select the label and number of samples.*
 
+### Step 2: Dataset Merging
+Consolidate data from multiple sessions or different people into a single master dataset.
+```bash
+python merge-datasets.py
+```
+*Output*: Merged data will be stored in `../dataset_merged`.
+
+### Step 3: Training (Person-Based)
+Train the MLP model using the "Person-Based Split" strategy. This script automatically handles augmentation and splits data by person ID.
+```bash
+python person-based-training-static-model.py
+```
+*Output*: A new model file saved to `../models/static_model_person_split_v1.h5`.
+
+### Step 4: Comprehensive Testing
+Validate the model against a robust testing suite to measure accuracy, confusion matrices, and per-class performance.
+```bash
+python comprehensive_testing_static.py
+```
+
+---
+
+## ⚙️ Technical Details
+
+### Feature Extraction
+- **Static**: 21 landmarks × 3 (x, y, z) + 4 fingertip distances + 1 thumb-index distance = **68 Features**.
+- **Dynamic**: 21 landmarks × 3 (x, y, z) = **63 Features** per frame.
+
+### Overfitting Prevention
+We strictly use **Person-Based Splitting** instead of random splitting. This guarantees that the model learns generalized ASL features rather than memorizing the specific hand shapes or camera angles of a single user.
