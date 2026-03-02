@@ -103,6 +103,25 @@ npm run dev
 ```
 Default URL: `http://localhost:3000`
 
+## Deployment
+
+For production environments, the system components should be deployed as follows:
+
+### AI Backend (Flask)
+- **Platform**: Railway, Render, or DigitalOcean App Platform.
+- **Method**: Use the provided `Dockerfile`.
+- **Resources**: Minimum 1GB RAM required for TensorFlow inference.
+
+### Signaling Server (Node.js)
+- **Platform**: Any Node.js hosting.
+- **Root**: `asl-meet/`
+- **Command**: `node server/socket-server.js`
+
+### Frontend (Next.js)
+- **Platform**: Vercel or Netlify.
+- **Root**: `asl-meet/`
+- **Environment Variables**: Configure `NEXT_PUBLIC_SOCKET_URL` and `NEXT_PUBLIC_ASL_BACKEND_URL` to point to your deployed services.
+
 ## Technical Specifications
 
 - **Feature Extraction**: 21 landmarks (x, y, z) + 4 fingertip-to-wrist distances + 1 thumb-to-index distance = 68 total features.
