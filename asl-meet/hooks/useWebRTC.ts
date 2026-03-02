@@ -43,6 +43,9 @@ export function useWebRTC({ roomId, peerId, displayName, onRemoteASLToggle, onTe
       connection: peerConnection,
       displayName: remoteDisplayName,
       isAslEnabled: false,
+      handRaised: false,
+      audioEnabled: true,
+      videoEnabled: true,
     };
 
     peersRef.current.set(remotePeerId, peerData);
@@ -65,7 +68,7 @@ export function useWebRTC({ roomId, peerId, displayName, onRemoteASLToggle, onTe
     peerConnection.oniceconnectionstatechange = () => {
       console.log(`ICE connection state for ${remotePeerId}:`, peerConnection.iceConnectionState);
       if (peerConnection.iceConnectionState === 'disconnected' ||
-          peerConnection.iceConnectionState === 'failed') {
+        peerConnection.iceConnectionState === 'failed') {
         handlePeerLeft(remotePeerId);
       }
     };
@@ -99,6 +102,9 @@ export function useWebRTC({ roomId, peerId, displayName, onRemoteASLToggle, onTe
         connection: peerConnection,
         displayName: 'Remote User',
         isAslEnabled: false,
+        handRaised: false,
+        audioEnabled: true,
+        videoEnabled: true,
       };
 
       peersRef.current.set(remotePeerId, peerData);
@@ -120,7 +126,7 @@ export function useWebRTC({ roomId, peerId, displayName, onRemoteASLToggle, onTe
       peerConnection.oniceconnectionstatechange = () => {
         console.log(`ICE connection state for ${remotePeerId}:`, peerConnection.iceConnectionState);
         if (peerConnection.iceConnectionState === 'disconnected' ||
-            peerConnection.iceConnectionState === 'failed') {
+          peerConnection.iceConnectionState === 'failed') {
           handlePeerLeft(remotePeerId);
         }
       };

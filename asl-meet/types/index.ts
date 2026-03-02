@@ -32,6 +32,8 @@ export interface PeerConnection {
   displayName: string;
   isAslEnabled: boolean;
   handRaised: boolean;
+  audioEnabled?: boolean;
+  videoEnabled?: boolean;
 }
 
 export interface SignalingMessage {
