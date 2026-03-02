@@ -9,6 +9,10 @@ import numpy as np
 import base64
 import os
 from collections import deque
+import tensorflow as tf
+# Optimize for low-latency inference
+tf.config.threading.set_intra_op_parallelism_threads(1)
+tf.config.threading.set_inter_op_parallelism_threads(1)
 from tensorflow.keras.models import load_model
 import mediapipe as mp
 import time
@@ -22,12 +26,30 @@ socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 print("Loading models...")
-STATIC_MODEL = load_model(os.path.join(BASE_DIR, "models", "gesture_model.h5"))
-DYNAMIC_MODEL = load_model(os.path.join(BASE_DIR, "models", "z_j_motion_lstm.h5"))
+STATIC_MODEL = load_model(os.path.join(BASE_DIR, "utils/models/static_model_person_split_v7.h5"))
+DYNAMIC_MODEL = load_model(os.path.join(BASE_DIR, "utils/models/dynamic_model_final.h5"))
 print("Models loaded successfully!")
 
-STATIC_LABELS = sorted(os.listdir(os.path.join(BASE_DIR, "dataset")))
-DYNAMIC_LABELS = ["Hello", "J", "Z"]  # Matches training order: Hello=0, J=1, Z=2
+# Optimized Inference Functions (XLA Compiled)
+@tf.function(jit_compile=True)
+def run_static_inference(model, feat):
+    return model(feat, training=False)
+
+@tf.function(jit_compile=True)
+def run_dynamic_inference(model, seq):
+    return model(seq, training=False)
+
+print("Warm-up (XLA)...")
+dummy_static = np.zeros((1, 68), dtype=np.float32)
+dummy_dynamic = np.zeros((1, 30, 68), dtype=np.float32)
+# Multi-pass warm-up to trigger JIT
+for _ in range(3):
+    run_static_inference(STATIC_MODEL, dummy_static)
+    run_dynamic_inference(DYNAMIC_MODEL, dummy_dynamic)
+print("Warm-up complete!")
+
+STATIC_LABELS = sorted(os.listdir(os.path.join(BASE_DIR, "utils/dataset_merged")))
+DYNAMIC_LABELS = ["BYE", "HELLO", "J", "NO", "YES", "Z"]
 
 # =======================
 # MODES
@@ -43,9 +65,11 @@ MODE_HOLD_RESULT = 3
 class ASLSession:
     def __init__(self):
         self.hands = mp.solutions.hands.Hands(
+            static_image_mode=False,
             max_num_hands=1,
-            min_detection_confidence=0.7,
-            min_tracking_confidence=0.7
+            model_complexity=0,  # 0 is faster, 1 is more accurate
+            min_detection_confidence=0.6,
+            min_tracking_confidence=0.6
         )
         self.drawer = mp.solutions.drawing_utils
 
@@ -54,7 +78,9 @@ class ASLSession:
         
         # Buffers
         self.motion_buffer = deque(maxlen=30)
-        self.motion_history = deque(maxlen=5)
+        self.motion_buffer_np = np.zeros((30, 68), dtype=np.float32) # Pre-allocated for speed
+        self.motion_history = deque(maxlen=3) # Faster response than 5
+        self.collect_count = 0
         self.stable_frame_count = 0
         
         # Tracking
@@ -64,25 +90,25 @@ class ASLSession:
         self.last_gesture_time = 0
         self.result_start_time = 0
 
-        # Thresholds (aligned with desktop version)
-        self.STATIC_MAX_MOTION = 0.005
+        # Thresholds (Optimized for responsiveness)
+        self.STATIC_MAX_MOTION = 0.006
         self.DYNAMIC_MIN_MOTION = 0.012
-        self.STATIC_STABLE_FRAMES = 8
+        self.STATIC_STABLE_FRAMES = 5  # Reduced from 8 for faster detection
         
-        self.CONF_STATIC = 0.80
-        self.CONF_DYNAMIC = 0.75
+        self.CONF_STATIC = 0.70
+        self.CONF_DYNAMIC = 0.70
         
-        self.COOLDOWN_TIME = 0.3
-        self.STATIC_HOLD_TIME = 1.5
-        self.DYNAMIC_HOLD_TIME = 2.0
+        self.COOLDOWN_TIME = 0.2
+        self.STATIC_HOLD_TIME = 0.8    # Reduced from 1.5 for faster flow
+        self.DYNAMIC_HOLD_TIME = 1.2   # Reduced from 2.0
 
         self.frame_counter = 0
         
         print(f"[SESSION] New ASL session created")
 
-    # ---------- STATIC FEATURES (68 dims) ----------
-    def extract_static_features(self, hand):
-        """Extract 68-dimensional feature vector for static gestures"""
+    # ---------- FEATURE EXTRACTION (68 dims) ----------
+    def extract_features(self, hand):
+        """Extract 68-dimensional feature vector (shared by static and dynamic)"""
         def dist(a, b):
             return np.linalg.norm(
                 np.array([a.x, a.y]) - np.array([b.x, b.y])
@@ -111,15 +137,8 @@ class ASLSession:
         # Thumb-to-index distance (1 feature)
         features.append(dist(lm[4], lm[8]))
 
-        return np.array(features).reshape(1, -1)
+        return np.array(features, dtype=np.float32)
 
-    # ---------- DYNAMIC FEATURES (63 dims) ----------
-    def extract_dynamic_features(self, hand):
-        """Extract 63-dimensional feature vector for dynamic gestures"""
-        features = []
-        for lm in hand.landmark:
-            features.extend([lm.x, lm.y, lm.z])
-        return np.array(features)
 
     # ---------- MOTION SMOOTHING ----------
     def get_smoothed_motion(self):
@@ -133,6 +152,17 @@ class ASLSession:
         self.frame_counter += 1
         now = time.time()
 
+        # TIMING METRICS
+        times = {
+            "decode": 0,
+            "mediapipe": 0,
+            "velocity": 0,
+            "inference": 0,
+            "encode": 0
+        }
+
+        t_start = time.time()
+
         # Decode base64 frame
         encoded = frame_data.split(",")[1]
         frame = cv2.imdecode(
@@ -141,18 +171,45 @@ class ASLSession:
         )
         frame = cv2.flip(frame, 1)
         rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        
+        times["decode"] = (time.time() - t_start) * 1000
 
         # Process with MediaPipe
-        t0 = time.time()
+        t_mp_start = time.time()
         result = self.hands.process(rgb)
-        lm_time = (time.time() - t0) * 1000
+        times["mediapipe"] = (time.time() - t_mp_start) * 1000
+        lm_time = times["mediapipe"]
 
         # Check cooldown
         in_cooldown = (now - self.last_gesture_time) < self.COOLDOWN_TIME
 
         # =======================
-        # HAND DETECTION
+        # HAND DETECTION & LOGIC
         # =======================
+        t_logic_start = time.time()
+        
+        if not result.multi_hand_landmarks:
+            # No hand detected: early exit to save CPU
+            self.prev_tip = None
+            self.motion_history.clear()
+            
+            # Reset state if we aren't displaying a result
+            if self.mode != MODE_HOLD_RESULT:
+                self.mode = MODE_IDLE
+                self.stable_frame_count = 0
+                self.collect_count = 0
+                self.motion_buffer_np.fill(0)
+                
+            return {
+                "text": self.display_text, # Keep showing result if in HOLD_RESULT mode
+                "confidence": round(self.display_conf, 3),
+                "mode": self.mode,
+                "motion": 0.0,
+                "server_timings": times,
+                "hand_detected": False
+            }
+
+        # HAND DETECTED: Proceed with logic
         if result.multi_hand_landmarks:
             hand = result.multi_hand_landmarks[0]
             self.drawer.draw_landmarks(
@@ -173,13 +230,11 @@ class ASLSession:
             self.motion_history.append(instant_motion)
             motion = self.get_smoothed_motion()
 
-            # =======================
-            # STATE MACHINE LOGIC
-            # =======================
+            # Result Logic / State Machine
             
             # HOLD RESULT → Return to IDLE
             if self.mode == MODE_HOLD_RESULT:
-                is_dynamic = "Z" in self.display_text or "J" in self.display_text
+                is_dynamic = self.display_text in DYNAMIC_LABELS
                 hold_duration = self.DYNAMIC_HOLD_TIME if is_dynamic else self.STATIC_HOLD_TIME
                 
                 if now - self.result_start_time >= hold_duration:
@@ -188,30 +243,17 @@ class ASLSession:
                     self.display_conf = 0.0
                     self.stable_frame_count = 0
 
-            # IDLE → STATIC (hand stable)
+            # IDLE → STATIC or DYNAMIC
             elif self.mode == MODE_IDLE and not in_cooldown:
                 if motion < self.STATIC_MAX_MOTION:
                     self.stable_frame_count += 1
                     if self.stable_frame_count >= self.STATIC_STABLE_FRAMES:
-                        self.mode = MODE_STATIC
-                        self.stable_frame_count = 0
-                else:
-                    self.stable_frame_count = 0
-
-            # STATIC → DYNAMIC or detect static
-            elif self.mode == MODE_STATIC:
-                if motion > self.DYNAMIC_MIN_MOTION:
-                    self.mode = MODE_DYNAMIC_COLLECT
-                    self.motion_buffer.clear()
-                    self.display_text = ""
-                    self.stable_frame_count = 0
-                    
-                elif motion < self.STATIC_MAX_MOTION:
-                    self.stable_frame_count += 1
-                    
-                    if self.stable_frame_count >= self.STATIC_STABLE_FRAMES:
-                        static_feat = self.extract_static_features(hand)
-                        pred = STATIC_MODEL.predict(static_feat, verbose=0)[0]
+                        # Stability reached: Attempt static recognition immediately
+                        t_inf_start = time.time()
+                        feat = self.extract_features(hand).reshape(1, -1).astype(np.float32)
+                        pred = run_static_inference(STATIC_MODEL, feat).numpy()[0]
+                        times["inference"] = (time.time() - t_inf_start) * 1000
+                        
                         idx = np.argmax(pred)
                         conf = pred[idx]
 
@@ -222,28 +264,79 @@ class ASLSession:
                             self.result_start_time = now
                             self.last_gesture_time = now
                             self.stable_frame_count = 0
-                            
                             print(f"[STATIC] Detected: {self.display_text} ({conf:.2f})")
+                        else:
+                            # Not enough confidence, but we are still still, so enter STATIC mode
+                            self.mode = MODE_STATIC
+                            self.stable_frame_count = 0
+                            print("[MODE] Switched to STATIC")
+                elif motion > self.DYNAMIC_MIN_MOTION:
+                    self.mode = MODE_DYNAMIC_COLLECT
+                    self.collect_count = 0
+                    self.motion_buffer_np.fill(0)
+                    self.display_text = ""
+                    self.stable_frame_count = 0
                 else:
-                    self.stable_frame_count = max(0, self.stable_frame_count - 2)
+                    self.stable_frame_count = 0
+
+            # STATIC → DYNAMIC or recognize again if stable
+            elif self.mode == MODE_STATIC:
+                if motion > self.DYNAMIC_MIN_MOTION:
+                    self.mode = MODE_DYNAMIC_COLLECT
+                    self.collect_count = 0
+                    self.motion_buffer_np.fill(0)
+                    self.display_text = ""
+                    self.stable_frame_count = 0
+                elif motion > self.STATIC_MAX_MOTION * 1.5:
+                    # Too much motion for static, go back to IDLE
+                    self.mode = MODE_IDLE
+                    self.stable_frame_count = 0
+                elif motion < self.STATIC_MAX_MOTION:
+                    self.stable_frame_count += 1
+                    # Periodic re-check every 5 frames if we stay in static
+                    if self.stable_frame_count >= self.STATIC_STABLE_FRAMES:
+                        t_inf_start = time.time()
+                        feat = self.extract_features(hand).reshape(1, -1).astype(np.float32)
+                        pred = run_static_inference(STATIC_MODEL, feat).numpy()[0]
+                        times["inference"] = (time.time() - t_inf_start) * 1000
+                        
+                        idx = np.argmax(pred)
+                        conf = pred[idx]
+
+                        if conf > self.CONF_STATIC:
+                            self.display_text = STATIC_LABELS[idx]
+                            self.display_conf = float(conf)
+                            self.mode = MODE_HOLD_RESULT
+                            self.result_start_time = now
+                            self.last_gesture_time = now
+                        
+                        self.stable_frame_count = 0
 
             # DYNAMIC COLLECT → Process sequence
             elif self.mode == MODE_DYNAMIC_COLLECT:
-                self.motion_buffer.append(self.extract_dynamic_features(hand))
+                # Abort if motion stops for too long (e.g. user gave up or hand went out of frame)
+                if motion < self.STATIC_MAX_MOTION and self.collect_count > 10:
+                    print("[DYNAMIC] Aborted: Motion stopped during collection")
+                    self.mode = MODE_IDLE
+                    self.collect_count = 0
+                    self.motion_buffer_np.fill(0)
+                else:
+                    feat = self.extract_features(hand)
+                    self.motion_buffer_np[self.collect_count] = feat
+                    self.collect_count += 1
 
-                if len(self.motion_buffer) == 30:
-                    seq = np.array(self.motion_buffer)
-                    # 1. Z-score (Match training)
-                    seq = (seq - np.mean(seq, axis=0)) / (np.std(seq, axis=0) + 1e-6)
-                    # 2. Delta (Match training)
-                    delta = np.diff(seq, axis=0)
-                    delta = np.vstack([np.zeros((1, 63)), delta])
-                    # 3. Concatenate (Match training)
-                    seq = np.concatenate([seq, delta], axis=1).reshape(1, 30, 126)
+                if self.collect_count == 30:
+                    t_inf_start = time.time()
+                    if 'DYNAMIC_MODEL' in globals():
+                        seq = self.motion_buffer_np.reshape(1, 30, 68)
+                        pred = run_dynamic_inference(DYNAMIC_MODEL, seq).numpy()[0]
+                        idx = np.argmax(pred)
+                        conf = pred[idx]
+                    else:
+                        idx = 0
+                        conf = 0.0
 
-                    pred = DYNAMIC_MODEL.predict(seq, verbose=0)[0]
-                    idx = np.argmax(pred)
-                    conf = pred[idx]
+                    times["inference"] = (time.time() - t_inf_start) * 1000
 
                     if conf > self.CONF_DYNAMIC:
                         self.display_text = DYNAMIC_LABELS[idx]
@@ -253,10 +346,12 @@ class ASLSession:
                         self.last_gesture_time = now
                         print(f"[DYNAMIC] Detected: {self.display_text} ({conf:.2f})")
                     else:
+                        print(f"[DYNAMIC] Low confidence: {DYNAMIC_LABELS[idx]} ({conf:.2f})")
                         self.mode = MODE_IDLE
                         self.display_text = ""
                     
-                    self.motion_buffer.clear()
+                    self.collect_count = 0
+                    self.motion_buffer_np.fill(0)
                     self.stable_frame_count = 0
 
         else:
@@ -268,6 +363,10 @@ class ASLSession:
             if self.mode != MODE_HOLD_RESULT:
                 self.mode = MODE_IDLE
                 self.stable_frame_count = 0
+                self.collect_count = 0
+                self.motion_buffer_np.fill(0)
+        
+        times["velocity"] = (time.time() - t_logic_start) * 1000 - times["inference"]
 
         # Performance logging
         if self.frame_counter % 30 == 0:
@@ -277,19 +376,21 @@ class ASLSession:
                 MODE_DYNAMIC_COLLECT: "DYNAMIC",
                 MODE_HOLD_RESULT: "RESULT"
             }
-            print(f"[PERF] Landmark: {lm_time:.1f}ms | Mode: {mode_names[self.mode]} | Buffer: {len(self.motion_buffer)}/30")
 
-        # Encode frame
-        _, buf = cv2.imencode(".jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, 85])
-        encoded_frame = base64.b64encode(buf).decode()
+        # Optimization: We NO LONGER encode and send the frame back.
+        # This saves ~15-30ms of CPU and 100KB+ per frame of network bandwidth.
+        # self.drawer.draw_landmarks is still called for internal logic if needed, 
+        # but the frame isn't returned.
         
-        return encoded_frame, {
+        return {
             "text": self.display_text,
             "confidence": round(self.display_conf, 3),
             "mode": self.mode,
             "motion": round(self.get_smoothed_motion(), 5),
-            "buffer_size": len(self.motion_buffer),
-            "stable_count": self.stable_frame_count
+            "buffer_size": self.collect_count,
+            "stable_count": self.stable_frame_count,
+            "server_timings": times,
+            "hand_detected": bool(result.multi_hand_landmarks)
         }
 
 # =======================
@@ -317,9 +418,9 @@ def handle_frame(data):
             emit("error", {"message": "Session not found"})
             return
             
-        frame, result = sessions[request.sid].process_frame(data["frame"])
+        result = sessions[request.sid].process_frame(data["frame"])
+        # We only emit the metadata result, not the 'frame'
         emit("frame_result", {
-            "frame": f"data:image/jpeg;base64,{frame}",
             "result": result
         })
     except Exception as e:

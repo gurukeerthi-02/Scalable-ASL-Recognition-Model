@@ -22,10 +22,15 @@ import time
 # CONFIGURATION
 # ============================================
 
-DATASET_PATH = "../dataset_merged"  # Use merged dataset
-MODEL_SAVE_PATH = "../models/static_model_person_split_v1.h5"
+# Get absolute path to dataset
+script_dir = os.path.dirname(os.path.abspath(__file__))
+DATASET_PATH = os.path.abspath(os.path.join(script_dir, "../dataset_merged"))
+MODEL_SAVE_PATH = "../models/static_model_person_split_v7.h5"
 AUGMENT_TRAINING = True  # Apply augmentation to training data only
-AUGMENTATIONS_PER_SAMPLE = 2  # How many augmented versions per sample
+AUGMENT_TRAINING = True  # Apply augmentation to training data only
+AUGMENTATIONS_PER_SAMPLE = 2  # Standard augmentation
+AUGMENTATIONS_HARD_CLASSES = 5 # Higher augmentation for difficult classes
+HARD_CLASSES = ['U', 'R', 'S', 'M', 'X'] # Classes that need more training data
 
 # ============================================
 # DATA AUGMENTATION
@@ -181,24 +186,39 @@ def split_randomly(data_by_person):
 # APPLY AUGMENTATION TO TRAINING SET
 # ============================================
 
-def augment_training_data(X_train, y_train):
+def augment_training_data(X_train, y_train, label_map):
     """Apply augmentation only to training data"""
     
     if not AUGMENT_TRAINING:
         return X_train, y_train
     
-    print(f"\nApplying augmentation ({AUGMENTATIONS_PER_SAMPLE}x per sample)...")
+    print(f"\nApplying augmentation...")
+    print(f"  Standard classes: {AUGMENTATIONS_PER_SAMPLE}x per sample")
+    print(f"  Hard classes ({', '.join(HARD_CLASSES)}): {AUGMENTATIONS_HARD_CLASSES}x per sample")
     
     X_augmented = []
     y_augmented = []
+    
+    # Create reverse map to lookup label name from index
+    idx_to_label = {v: k for k, v in label_map.items()}
     
     for i in range(len(X_train)):
         # Add original
         X_augmented.append(X_train[i])
         y_augmented.append(y_train[i])
         
+        # Determine number of augmentations
+        label_idx = y_train[i]
+        # Handle if y_train is one-hot or integer
+        if isinstance(label_idx, np.ndarray):
+            label_idx = np.argmax(label_idx)
+            
+        label_name = idx_to_label.get(label_idx, "")
+        
+        num_augs = AUGMENTATIONS_HARD_CLASSES if label_name in HARD_CLASSES else AUGMENTATIONS_PER_SAMPLE
+        
         # Add augmented versions
-        for _ in range(AUGMENTATIONS_PER_SAMPLE):
+        for _ in range(num_augs):
             aug_sample = augment_sample(X_train[i])
             X_augmented.append(aug_sample)
             y_augmented.append(y_train[i])
@@ -218,16 +238,16 @@ def build_model(num_classes):
     """Build improved model with regularization"""
     
     model = Sequential([
-        Dense(128, activation='relu', input_shape=(68,), kernel_regularizer=l2(0.01)),
-        BatchNormalization(),
-        Dropout(0.6),
-        
-        Dense(64, activation='relu', kernel_regularizer=l2(0.01)),
+        Dense(256, activation='relu', input_shape=(68,), kernel_regularizer=l2(0.01)),
         BatchNormalization(),
         Dropout(0.5),
         
-        Dense(32, activation='relu', kernel_regularizer=l2(0.01)),
+        Dense(128, activation='relu', kernel_regularizer=l2(0.01)),
+        BatchNormalization(),
         Dropout(0.4),
+        
+        Dense(64, activation='relu', kernel_regularizer=l2(0.01)),
+        Dropout(0.3),
         
         Dense(num_classes, activation='softmax')
     ])
@@ -266,7 +286,23 @@ def main():
     print(f"  Testing:    {len(X_test)} samples")
     
     # Augment training data
-    X_train, y_train = augment_training_data(X_train, y_train)
+    X_train, y_train = augment_training_data(X_train, y_train, label_map)
+    
+    # Calculate class weights
+    from sklearn.utils.class_weight import compute_class_weight
+    
+    # We want to give more weight to HARD_CLASSES
+    # First, let's create a custom weight dictionary
+    class_weights = {}
+    
+    print("\nAssigning class weights:")
+    for label, idx in label_map.items():
+        if label in HARD_CLASSES:
+            weight = 2.0  # Double importance
+            print(f"  {label}: 2.0 (High Priority)")
+        else:
+            weight = 1.0
+        class_weights[idx] = weight
     
     # One-hot encode labels
     num_classes = len(labels)
@@ -286,7 +322,7 @@ def main():
     # Callbacks
     early_stop = EarlyStopping(
         monitor='val_loss',
-        patience=20,
+        patience=30,
         restore_best_weights=True,
         verbose=1
     )
@@ -315,10 +351,11 @@ def main():
     
     history = model.fit(
         X_train, y_train,
-        epochs=100,
-        batch_size=32,
+        epochs=150,
+        batch_size=16,
         validation_data=(X_val, y_val),
         callbacks=[early_stop, reduce_lr, checkpoint],
+        class_weight=class_weights,
         verbose=1
     )
     

@@ -1,100 +1,115 @@
-# Scalable ASL Recognition System (Backend & Models)
+# Scalable ASL Recognition System
 
-This repository hosts the backend and machine learning components for a scalable American Sign Language (ASL) recognition system. The system employs a hybrid architecture combining **Multi-Layer Perceptron (MLP)** for static gestures and **Long Short-Term Memory (LSTM)** networks for dynamic gestures, leveraging **Mediapipe** for robust hand landmark extraction.
+This project provides a comprehensive solution for real-time American Sign Language (ASL) recognition integrated into a peer-to-peer video calling application. The system leverages Mediapipe for high-fidelity hand landmark extraction and employs a hybrid deep learning architecture to recognize both static and dynamic gestures with minimal latency.
 
-## 📂 Project Structure
+## Core Features
 
-- **`server.py`**: The main Flask + Socket.IO backend server. Handles real-time video stream processing and inference.
-- **`utils/improved/`**: Contains the latest, robust scripts for the development workflow (collection, training, testing).
-- **`utils/models/`**: Storage for trained model artifacts.(empty)
-- **`utils/dataset_merged/`**: The consolidated dataset used for training.(empty)
+- **Hybrid Recognition Model**: Combined Multi-Layer Perceptron (MLP) for static signs and Long Short-Term Memory (LSTM) for dynamic sequences.
+- **Low-Latency Backend**: Optimized Python server using XLA (Accelerated Linear Algebra) compiled inference and Socket.IO for real-time metadata exchange.
+- **WebRTC Video Conferencing**: Secure, peer-to-peer video calling supporting up to four simultaneous participants.
+- **Text-to-Speech Integration**: Automated conversion of recognized signs into audible speech for remote participants.
+- **State Machine Logic**: Robust gesture detection system that filters motion noise and handles transitions between idle, collection, and recognition states.
+- **Performance Monitoring**: Integrated end-to-end latency tracking across capture, network, landmarking, and inference stages.
+- **Portable Data Collection**: Standalone utilities for capturing specialized datasets from multiple users to improve model generalization.
 
----
+## Project Structure
 
-## 🧠 Trained Models
+- **root**: Contains the ASL recognition backend, model assets, and data collection utilities.
+- **asl-meet**: Next.js frontend application for WebRTC video calls and ASL visualization.
+- **utils**: Collection of training scripts, performance measurement tools, and dataset management utilities.
 
-### 1. Static Gesture Model (MLP)
-- **Architecture**: Deep Neural Network (MLP) with Dropout and BatchNormalization.
-- **Input**: 68 normalized features (Relative (x,y,z) coordinates + Euclidean distances between fingertips and palm).
-- **Training Strategy**: **Person-Based Split**.
-    - Ensures that the training, validation, and test sets contain data from *different* people to prevent overfitting and ensure real-world generalization.
-- **Classes**: A-Z (Static alphabet excluding J and Z).
+## Setup Instructions
 
-### 2. Dynamic Gesture Model (LSTM)
-- **Architecture**: LSTM for temporal sequence analysis.
-- **Input**: Sequence of 30 frames (x, y, z coordinates).
-- **Classes**: Dynamic words like "Hello", "J", "Z".
+### 1. Backend Recognition Server
 
----
+The backend requires Python 3.10+ and several deep learning libraries.
 
-## 🚀 Running the Backend
+1. Install the required Python dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-### 1. Prerequisites
-Install the required dependencies:
+2. Ensure your trained model files are located in the `utils/models/` directory:
+   - Static Model: `utils/models/static_model_person_split_v7.h5`
+   - Dynamic Model: `utils/models/dynamic_model_final.h5`
+
+### 2. Video Call Frontend
+
+The frontend is built with Next.js 13+ and requires Node.js 18+.
+
+1. Navigate to the frontend directory:
+   ```bash
+   cd asl-meet
+   ```
+
+2. Install the Node dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Configure environment variables:
+   Copy `.env.local.example` to `.env.local` and provide your Supabase credentials:
+   ```bash
+   cp .env.local.example .env.local
+   ```
+   *Required variables*: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+
+## Data Collection
+
+The project includes portable scripts to facilitate the collection of new ASL data for model refinement.
+
+### Static Data Collection
+Captures 68-dimensional hand landmark vectors for 24 static letters.
 ```bash
-pip install -r requirements.txt
+python utils/improved/collect-data-portable.py
 ```
+*   Follow the prompts to enter your name.
+*   The script will guide you through each letter, saving 200 samples per gesture.
+*   Data is automatically packaged into a ZIP file upon completion.
 
-### 2. Model Setup
-Ensure the trained models are placed where `server.py` expects them (create a `models` folder in the root if it doesn't exist):
+### Dynamic Data Collection
+Captures temporal sequences (30 frames) for dynamic gestures like 'HELLO', 'BYE', 'YES', and 'NO'.
 ```bash
-# Example setup
-mkdir models
-cp utils/models/static_model_person_split_v1.h5 models/gesture_model.h5
-# Copy the LSTM model similarly
+python utils/improved/dynamic/collect-data-portable.py
 ```
+*   Follow the on-screen guide for motion patterns.
+*   Hold SPACE to record a gesture sequence.
+*   Sequences are saved as `.npy` files and zipped for sharing.
 
-### 3. Start the Server
-Run the Flask server to start the backend with Socket.IO support:
+## Running the Project
+
+To run the complete system, you must start three parallel services:
+
+### Step 1: Start the ASL Recognition Backend
+This service performs the MediaPipe landmarking and neural network inference.
 ```bash
 python server.py
 ```
-The server will start on `http://0.0.0.0:5000`.
+Default URL: `http://localhost:5000`
 
----
-
-## 🛠️ Development Workflow
-
-The `utils/improved/` directory contains the complete pipeline for building and improving the models.
-
-### Step 1: Data Collection
-Collect high-quality data using the portable collector. This script captures landmarks for specific gestures.
+### Step 2: Start the WebRTC Signaling Server
+This service facilitates peer connection negotiation between callers.
 ```bash
-# Coordinate to utils/improved directory
-cd utils/improved
-
-# Run the collector
-python collect-data-portable.py
+cd asl-meet
+npm run socket-server
 ```
-*Follow the on-screen prompts to select the label and number of samples.*
+Default URL: `http://localhost:3001`
 
-### Step 2: Dataset Merging
-Consolidate data from multiple sessions or different people into a single master dataset.
+### Step 3: Start the Next.js Application
+The user interface for creating and joining video call rooms.
 ```bash
-python merge-datasets.py
+cd asl-meet
+npm run dev
 ```
-*Output*: Merged data will be stored in `../dataset_merged`.
+Default URL: `http://localhost:3000`
 
-### Step 3: Training (Person-Based)
-Train the MLP model using the "Person-Based Split" strategy. This script automatically handles augmentation and splits data by person ID.
-```bash
-python person-based-training-static-model.py
-```
-*Output*: A new model file saved to `../models/static_model_person_split_v1.h5`.
+## Technical Specifications
 
-### Step 4: Comprehensive Testing
-Validate the model against a robust testing suite to measure accuracy, confusion matrices, and per-class performance.
-```bash
-python comprehensive_testing_static.py
-```
+- **Feature Extraction**: 21 landmarks (x, y, z) + 4 fingertip-to-wrist distances + 1 thumb-to-index distance = 68 total features.
+- **Inference Optimization**: Models are loaded with TensorFlow XLA JIT compilation to reduce per-frame inference time to <2ms.
+- **Congestion Control**: Frame transmission is throttled to 10 FPS with an adaptive buffer management system to prevent network latency spikes.
+- **Model Training**: Systems employ a person-based split strategy to ensure the models generalize across different users and physical backgrounds.
 
----
+## License
 
-## ⚙️ Technical Details
-
-### Feature Extraction
-- **Static**: 21 landmarks × 3 (x, y, z) + 4 fingertip distances + 1 thumb-index distance = **68 Features**.
-- **Dynamic**: 21 landmarks × 3 (x, y, z) = **63 Features** per frame.
-
-### Overfitting Prevention
-We strictly use **Person-Based Splitting** instead of random splitting. This guarantees that the model learns generalized ASL features rather than memorizing the specific hand shapes or camera angles of a single user.
+MIT License

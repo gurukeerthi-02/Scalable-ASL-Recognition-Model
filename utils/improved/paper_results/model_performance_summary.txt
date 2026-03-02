@@ -1,0 +1,23 @@
+ASL RECOGNITION MODEL - RESEARCH SUMMARY
+========================================
+Date Generated: 2026-02-17 11:21:06
+Model Source: Pre-trained (../models/static_model_person_split_v7.h5)
+Dataset Path: ../dataset_merged
+
+DATASET STATISTICS
+------------------
+Total Classes: 24
+Total Samples (Original): 48000
+Training Samples (Augmented): 86400
+Test Samples: 9600
+
+MODEL PERFORMANCE
+-----------------
+Test Accuracy: 97.36%
+Test Loss: 0.1792
+Best Val Accuracy: N/A (Pre-trained)
+Final Train Accuracy: N/A (Pre-trained)
+
+OVERFITTING ANALYSIS
+--------------------
+Train-Test Gap: N/A

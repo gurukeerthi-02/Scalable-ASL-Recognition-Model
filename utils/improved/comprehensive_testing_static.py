@@ -28,7 +28,7 @@ from datetime import datetime
 # CONFIGURATION
 # ============================================
 
-MODEL_PATH = "../models/static_model_person_split.h5"  # Your improved model
+MODEL_PATH = "../models/static_model_person_split_v7.h5"  # Your improved model
 CONFIDENCE_THRESHOLD = 0.60  # Only show predictions above 60% confidence
 SMOOTHING_WINDOW = 5  # Average last 5 predictions for stability
 
@@ -88,7 +88,7 @@ def extract_features(hand_landmarks):
 class PredictionSmoother:
     """Smooth predictions using moving average"""
     
-    def __init__(self, window_size=5):
+    def __init__(self, window_size=3):
         self.window_size = window_size
         self.predictions = deque(maxlen=window_size)
     

@@ -34,14 +34,12 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Models & Data (Keeping datasets as per original)
+# Models & Data
 *.npy
 *.h5
-!dataset/
-!motion-dataset/
-!improved_dataset/
+!utils/models/*.h5
 !utils/dataset_merged/
-!models/
+!utils/dataset_merged/**
 
 # Environment files
 .env
@@ -63,7 +61,7 @@ Thumbs.db
 README.html
 
 # temporary files
-asl-meet/
+# asl-meet/ removed as it should be tracked
 
 # files and folders to be ignored
 Review_Paper_Draft.md

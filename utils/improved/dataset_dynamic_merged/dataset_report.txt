@@ -1,0 +1,137 @@
+======================================================================
+DYNAMIC DATASET MERGE REPORT
+======================================================================
+
+Total People:    4
+Total Gestures:  13
+Total Sequences: 3,707
+Avg per Gesture: 285
+
+----------------------------------------------------------------------
+CONTRIBUTORS
+----------------------------------------------------------------------
+a.mohamedaashiq     :  1300 sequences
+gurukeerthi m       :   600 sequences
+neeharika dynamic gestures set 1:   907 sequences
+vishal b            :   900 sequences
+
+----------------------------------------------------------------------
+PER-GESTURE BREAKDOWN
+----------------------------------------------------------------------
+
+Gesture 'BYE':
+  Total: 400 sequences
+  Contributors: 4
+    - a.mohamedaashiq: 100 sequences
+    - gurukeerthi m: 100 sequences
+    - neeharika dynamic gestures set 1: 100 sequences
+    - vishal b: 100 sequences
+
+Gesture 'DONE':
+  Total: 100 sequences
+  Contributors: 3
+    - a.mohamedaashiq: 100 sequences
+    - neeharika dynamic gestures set 1: 0 sequences
+    - vishal b: 0 sequences
+
+Gesture 'HELLO':
+  Total: 400 sequences
+  Contributors: 4
+    - a.mohamedaashiq: 100 sequences
+    - gurukeerthi m: 100 sequences
+    - neeharika dynamic gestures set 1: 100 sequences
+    - vishal b: 100 sequences
+
+Gesture 'HOWAREYOU':
+  Total: 100 sequences
+  Contributors: 2
+    - a.mohamedaashiq: 100 sequences
+    - vishal b: 0 sequences
+
+Gesture 'IMFINE':
+  Total: 107 sequences
+  Contributors: 3
+    - a.mohamedaashiq: 100 sequences
+    - neeharika dynamic gestures set 1: 7 sequences
+    - vishal b: 0 sequences
+
+Gesture 'J':
+  Total: 400 sequences
+  Contributors: 4
+    - a.mohamedaashiq: 100 sequences
+    - gurukeerthi m: 100 sequences
+    - neeharika dynamic gestures set 1: 100 sequences
+    - vishal b: 100 sequences
+
+Gesture 'NICETOMEETYOU':
+  Total: 100 sequences
+  Contributors: 2
+    - a.mohamedaashiq: 100 sequences
+    - vishal b: 0 sequences
+
+Gesture 'NO':
+  Total: 400 sequences
+  Contributors: 4
+    - a.mohamedaashiq: 100 sequences
+    - gurukeerthi m: 100 sequences
+    - neeharika dynamic gestures set 1: 100 sequences
+    - vishal b: 100 sequences
+
+Gesture 'PLEASE':
+  Total: 300 sequences
+  Contributors: 3
+    - a.mohamedaashiq: 100 sequences
+    - neeharika dynamic gestures set 1: 100 sequences
+    - vishal b: 100 sequences
+
+Gesture 'REPEAT':
+  Total: 300 sequences
+  Contributors: 3
+    - a.mohamedaashiq: 100 sequences
+    - neeharika dynamic gestures set 1: 100 sequences
+    - vishal b: 100 sequences
+
+Gesture 'THANKYOU':
+  Total: 300 sequences
+  Contributors: 3
+    - a.mohamedaashiq: 100 sequences
+    - neeharika dynamic gestures set 1: 100 sequences
+    - vishal b: 100 sequences
+
+Gesture 'YES':
+  Total: 400 sequences
+  Contributors: 4
+    - a.mohamedaashiq: 100 sequences
+    - gurukeerthi m: 100 sequences
+    - neeharika dynamic gestures set 1: 100 sequences
+    - vishal b: 100 sequences
+
+Gesture 'Z':
+  Total: 400 sequences
+  Contributors: 4
+    - a.mohamedaashiq: 100 sequences
+    - gurukeerthi m: 100 sequences
+    - neeharika dynamic gestures set 1: 100 sequences
+    - vishal b: 100 sequences
+
+======================================================================
+TRAINING RECOMMENDATIONS
+======================================================================
+
+[GOOD]: Data from 3+ people
+  Suggested split:
+    Training:   a.mohamedaashiq, gurukeerthi m
+    Validation: vishal b
+    Testing:    neeharika dynamic gestures set 1
+
+[WARN]: Gesture imbalance detected
+  Min: 100, Max: 400
+  Consider collecting more for underrepresented gestures
+
+======================================================================
+EXPECTED MODEL PERFORMANCE
+======================================================================
+
+[EXCELLENT]: Sufficient data for good model
+  Expected test accuracy: 75-85%
+

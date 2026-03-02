@@ -27,7 +27,7 @@ TEMP_EXTRACT_DIR = "temp_extracted"
 # EXTRACT ZIP FILES
 # ============================================
 
-def extract_all_zips(directory="."):
+def extract_all_zips(directory="../zip_files"):
     """Extract all ZIP files in directory"""
     zip_files = [f for f in os.listdir(directory) if f.endswith('.zip') and 'asl_data' in f]
     
@@ -45,7 +45,8 @@ def extract_all_zips(directory="."):
     for zip_file in zip_files:
         print(f"\n📂 Extracting {zip_file}...")
         
-        with zipfile.ZipFile(zip_file, 'r') as zip_ref:
+        full_zip_path = os.path.join(directory, zip_file)
+        with zipfile.ZipFile(full_zip_path, 'r') as zip_ref:
             # Extract to temp directory
             extract_path = os.path.join(TEMP_EXTRACT_DIR, zip_file.replace('.zip', ''))
             zip_ref.extractall(extract_path)

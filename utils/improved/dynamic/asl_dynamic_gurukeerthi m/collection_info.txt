@@ -1,0 +1,6 @@
+Collector: gurukeerthi m
+Date: 2026-02-22 10:01:19
+Gestures: J, Z, HELLO, BYE, YES, NO, PLEASE, THANKYOU, REPEAT, IMFINE, DONE, HOWAREYOU, NICETOMEETYOU
+Samples per gesture: 100
+Sequence length: 30
+Feature dimensions: (30, 68)

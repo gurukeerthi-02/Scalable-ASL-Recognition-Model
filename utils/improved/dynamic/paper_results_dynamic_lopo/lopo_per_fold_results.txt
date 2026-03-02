@@ -1,0 +1,38 @@
+LOPO CROSS-VALIDATION — PER FOLD RESULTS
+=======================================================
+
+FOLD 1: Test person = a.mohamedaashiq
+  Train people:    ['gurukeerthi m', 'neeharika dynamic gestures set 1', 'vishal b']
+  Train sequences: 2880 (after aug)
+  Val sequences:   360
+  Test sequences:  600
+  Test Accuracy:   85.17%
+  Best Val Acc:    100.00%
+  Epochs run:      100 (best epoch: 2)
+
+FOLD 2: Test person = gurukeerthi m
+  Train people:    ['a.mohamedaashiq', 'neeharika dynamic gestures set 1', 'vishal b']
+  Train sequences: 2880 (after aug)
+  Val sequences:   360
+  Test sequences:  600
+  Test Accuracy:   96.00%
+  Best Val Acc:    100.00%
+  Epochs run:      100 (best epoch: 7)
+
+FOLD 3: Test person = neeharika dynamic gestures set 1
+  Train people:    ['a.mohamedaashiq', 'gurukeerthi m', 'vishal b']
+  Train sequences: 2880 (after aug)
+  Val sequences:   360
+  Test sequences:  600
+  Test Accuracy:   76.50%
+  Best Val Acc:    100.00%
+  Epochs run:      100 (best epoch: 6)
+
+FOLD 4: Test person = vishal b
+  Train people:    ['a.mohamedaashiq', 'gurukeerthi m', 'neeharika dynamic gestures set 1']
+  Train sequences: 2880 (after aug)
+  Val sequences:   360
+  Test sequences:  600
+  Test Accuracy:   98.67%
+  Best Val Acc:    100.00%
+  Epochs run:      100 (best epoch: 7)
