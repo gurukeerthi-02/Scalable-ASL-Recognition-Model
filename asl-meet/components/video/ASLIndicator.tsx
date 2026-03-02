@@ -54,9 +54,9 @@ export function ASLIndicator({
                   <h3 className="text-xs font-bold uppercase tracking-wide text-black">Live Recognition</h3>
                   {lastRecognition && (
                     <Badge className={`text-[9px] font-black border-0 px-1.5 h-4 ${lastRecognition.mode === 1 ? 'bg-blue-600 text-white' :
-                        lastRecognition.mode === 2 ? 'bg-purple-600 text-white' :
-                          lastRecognition.mode === 3 ? 'bg-green-600 text-white' :
-                            'bg-gray-400 text-white'
+                      lastRecognition.mode === 2 ? 'bg-purple-600 text-white' :
+                        lastRecognition.mode === 3 ? 'bg-green-600 text-white' :
+                          'bg-gray-400 text-white'
                       }`}>
                       {lastRecognition.mode === 1 ? 'STATIC' :
                         lastRecognition.mode === 2 ? 'DYNAMIC' :
@@ -70,7 +70,7 @@ export function ASLIndicator({
               {lastRecognition && lastRecognition.text ? (
                 <div className="space-y-3">
                   <div className="flex items-baseline gap-2 flex-wrap">
-                    <span className="text-4xl font-black text-black tracking-tight">
+                    <span className="text-3xl md:text-4xl font-black text-black tracking-tight">
                       {lastRecognition.text}
                     </span>
                     <Badge className="bg-black text-yellow-400 border-0 text-xs font-bold">
@@ -127,7 +127,7 @@ export function ASLIndicator({
         <div className="space-y-2">
           <h4 className="text-[10px] font-bold uppercase tracking-wider text-black/60 ml-1">Message Buffer</h4>
           <div className="relative group">
-            <div className="min-h-[100px] p-4 bg-gray-50 border-2 border-gray-200 rounded-xl text-lg font-medium text-black leading-relaxed group-hover:border-gray-300 transition-colors">
+            <div className="min-h-[80px] md:min-h-[100px] p-3 md:p-4 bg-gray-50 border-2 border-gray-200 rounded-xl text-base md:text-lg font-medium text-black leading-relaxed group-hover:border-gray-300 transition-colors">
               {sentenceBuffer || (
                 <span className="text-black/40 italic text-sm font-normal">Start signing to build your message...</span>
               )}
@@ -200,11 +200,11 @@ export function ASLIndicator({
       </div>
 
       {/* Action Footer */}
-      <div className="p-4 bg-gradient-to-t from-gray-50 to-white border-t border-gray-200">
+      <div className="p-3 md:p-4 bg-gradient-to-t from-gray-50 to-white border-t border-gray-200">
         <Button
           onClick={onSendSentence}
           disabled={!sentenceBuffer.trim()}
-          className="w-full h-12 rounded-xl bg-black hover:bg-black/90 text-yellow-400 font-bold shadow-lg transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full h-10 md:h-12 rounded-xl bg-black hover:bg-black/90 text-yellow-400 font-bold shadow-lg transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Send className="w-4 h-4 mr-2" />
           Send Message

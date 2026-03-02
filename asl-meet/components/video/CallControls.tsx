@@ -92,7 +92,7 @@ export function CallControls({
             <Button
               variant="destructive"
               onClick={onLeave}
-              className="rounded-full w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center transition-all bg-red-600 hover:bg-red-700 shadow-lg hover:shadow-xl border-0 hover:scale-105 active:scale-95"
+              className="rounded-full w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center transition-all bg-red-600 hover:bg-red-700 shadow-lg hover:shadow-xl border-0 hover:scale-105 active:scale-95"
             >
               <PhoneOff className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </Button>
@@ -144,7 +144,7 @@ function ControlToggle({
       <TooltipTrigger asChild>
         <Button
           onClick={onClick}
-          className={`rounded-full w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 ${getColors()}`}
+          className={`rounded-full w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 ${getColors()}`}
           variant="ghost"
         >
           {active ? activeIcon : inactiveIcon}

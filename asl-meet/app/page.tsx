@@ -24,9 +24,9 @@ export default function HomePage() {
             <a href="#about" className="hover:text-black transition-colors">About</a>
             <a href="#safety" className="hover:text-black transition-colors">Safety</a>
           </div>
-          <Button 
+          <Button
             // variant="outline" 
-            size="sm" 
+            size="sm"
             onClick={() => router.push('/join')}
             className="border-2 bg-yellow-300 border-black text-black hover:bg-black hover:text-yellow-400 font-semibold transition-all"
           >
@@ -42,7 +42,7 @@ export default function HomePage() {
           <span className="text-black">Powered by Real-time AI Recognition</span>
         </div>
 
-        <h1 className="text-6xl md:text-7xl lg:text-8xl font-extrabold tracking-tight mb-6 leading-[1.1] animate-slide-up">
+        <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold tracking-tight mb-6 leading-[1.1] animate-slide-up">
           <span className="text-black">
             Communication
           </span>
@@ -157,25 +157,24 @@ export default function HomePage() {
   );
 }
 
-function FeatureCard({ icon, title, description, accentColor }: { 
-  icon: React.ReactNode; 
-  title: string; 
+function FeatureCard({ icon, title, description, accentColor }: {
+  icon: React.ReactNode;
+  title: string;
   description: string;
   accentColor: 'yellow' | 'gray';
 }) {
   const isYellow = accentColor === 'yellow';
-  
+
   return (
     <Card className="group relative p-8 text-left bg-white border-gray-200 hover:shadow-2xl hover:border-black/20 transition-all duration-300 overflow-hidden">
       {/* Gradient overlay on hover */}
       <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/0 to-yellow-400/0 group-hover:from-yellow-400/10 group-hover:to-yellow-400/20 transition-all duration-300" />
-      
+
       <div className="relative">
-        <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300 ${
-          isYellow 
-            ? 'bg-yellow-400/20 text-black' 
+        <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300 ${isYellow
+            ? 'bg-yellow-400/20 text-black'
             : 'bg-black/5 text-black'
-        }`}>
+          }`}>
           {icon}
         </div>
         <h3 className="font-bold text-xl mb-3 text-black">{title}</h3>

@@ -328,23 +328,23 @@ export default function CallPage() {
       <div className="flex flex-col h-[100dvh] bg-gradient-to-br from-yellow-400 via-yellow-300 to-yellow-400 overflow-hidden">
 
         {/* Professional Header */}
-        <header className="h-16 md:h-18 border-b border-black/10 flex items-center justify-between px-4 md:px-6 bg-white/90 backdrop-blur-xl z-50 flex-shrink-0 shadow-sm">
-          <div className="flex items-center gap-3 min-w-0 flex-1">
-            <div className="flex items-center gap-2">
-              <div className="p-2 bg-black rounded-xl flex-shrink-0">
-                <Hand className="w-5 h-5 text-yellow-400" />
+        <header className="h-14 md:h-18 border-b border-black/10 flex items-center justify-between px-3 md:px-6 bg-white/90 backdrop-blur-xl z-50 flex-shrink-0 shadow-sm">
+          <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 md:gap-2">
+              <div className="p-1.5 bg-black rounded-lg md:rounded-xl flex-shrink-0">
+                <Hand className="w-4 h-4 md:w-5 md:h-5 text-yellow-400" />
               </div>
-              <span className="hidden sm:block text-lg font-bold text-black">ASL Meet</span>
+              <span className="hidden sm:block text-base md:text-lg font-bold text-black">ASL Meet</span>
             </div>
 
             <div className="h-8 w-px bg-black/10 mx-2 hidden md:block" />
 
             <div className="min-w-0 flex flex-col">
               <div className="flex items-center gap-2">
-                <h1 className="text-sm md:text-base font-bold truncate text-black">
+                <h1 className="text-xs md:text-base font-bold truncate text-black max-w-[100px] sm:max-w-none">
                   {roomName || 'Active Session'}
                 </h1>
-                <Badge className="bg-green-500 text-white hover:bg-green-600 px-2 h-5 text-[10px] font-bold">
+                <Badge className="bg-green-500 text-white hover:bg-green-600 px-1.5 md:px-2 h-4 md:h-5 text-[9px] md:text-[10px] font-bold">
                   LIVE
                 </Badge>
               </div>
@@ -442,16 +442,16 @@ export default function CallPage() {
               </div>
 
               {/* Mobile Bottom Sheet */}
-              <div className="lg:hidden absolute bottom-24 left-0 right-0 z-30 px-4">
-                <div className="bg-white rounded-t-3xl shadow-2xl border-t border-black/10 max-h-[50vh] flex flex-col">
-                  <div className="p-4 border-b border-black/10 flex items-center justify-between">
+              <div className="lg:hidden absolute bottom-24 left-2 right-2 z-30 animate-in slide-in-from-bottom duration-300">
+                <div className="bg-white rounded-2xl shadow-2xl border border-black/10 flex flex-col overflow-hidden max-h-[40vh]">
+                  <div className="p-3 border-b border-black/10 flex items-center justify-between bg-yellow-400/5">
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                      <span className="text-sm font-bold text-black">ASL Interpreter</span>
+                      <span className="text-xs font-bold text-black uppercase tracking-wider">ASL Interpreter</span>
                     </div>
-                    <Badge className="text-[10px] bg-black text-yellow-400">Active</Badge>
+                    <Badge className="text-[9px] bg-black text-yellow-400 border-0 h-4">LIVE</Badge>
                   </div>
-                  <div className="overflow-auto max-h-[40vh]">
+                  <div className="flex-1 overflow-y-auto">
                     <ASLIndicator
                       isActive={voiceOutEnabled}
                       lastRecognition={lastRecognition || undefined}
@@ -470,7 +470,7 @@ export default function CallPage() {
         </main>
 
         {/* Control Bar */}
-        <footer className="h-20 md:h-24 bg-white/95 backdrop-blur-xl border-t border-black/10 flex items-center justify-center px-4 z-40 shadow-lg">
+        <footer className="h-16 md:h-24 bg-white/95 backdrop-blur-xl border-t border-black/10 flex items-center justify-center px-4 z-40 shadow-lg">
           <div className="max-w-4xl w-full">
             <CallControls
               audioEnabled={audioEnabled}
