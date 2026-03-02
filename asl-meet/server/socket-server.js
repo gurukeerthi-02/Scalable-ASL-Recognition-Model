@@ -1,7 +1,15 @@
 const { createServer } = require('http');
 const { Server } = require('socket.io');
 
-const httpServer = createServer();
+const httpServer = createServer((req, res) => {
+  if (req.url === '/') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ status: 'ok', message: 'ASL Signaling Server is running' }));
+  } else {
+    res.writeHead(404);
+    res.end();
+  }
+});
 
 const io = new Server(httpServer, {
   cors: {

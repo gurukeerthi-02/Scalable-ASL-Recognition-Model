@@ -23,6 +23,10 @@ import time
 app = Flask(__name__)
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
+
+@app.route("/")
+def health_check():
+    return {"status": "ok", "message": "ASL Recognition Server is running"}
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 print("Loading models...")
