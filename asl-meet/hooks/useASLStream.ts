@@ -40,9 +40,7 @@ export function useASLStream({
     // primary server: using [IP_ADDRESS]
     // fallback server: http://localhost:5000
 
-    const ASL_BACKEND_URL = process.env.NEXT_PUBLIC_ASL_BACKEND_URL_PRIMARY || 
-      process.env.NEXT_PUBLIC_ASL_BACKEND_URL_FALLBACK || 
-        'http://localhost:5000';
+    const ASL_BACKEND_URL = process.env.NEXT_PUBLIC_ASL_BACKEND_URL || 'http://localhost:5000';
 
     clientRef.current = new ASLClient(ASL_BACKEND_URL);
     clientRef.current.connect(onRecognition);

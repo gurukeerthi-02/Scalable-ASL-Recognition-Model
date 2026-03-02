@@ -35,9 +35,7 @@ export function useSignaling({
   // fallback server: http://localhost:3001
 
   useEffect(() => {
-    const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL_PRIMARY || 
-      process.env.NEXT_PUBLIC_SOCKET_URL_FALLBACK || 
-        'http://localhost:3001';
+    const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
 
     socketRef.current = io(SOCKET_URL, {
       transports: ['websocket'],
