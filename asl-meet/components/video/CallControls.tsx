@@ -8,7 +8,8 @@ import {
   VideoOff,
   PhoneOff,
   Hand,
-  Sparkles
+  Sparkles,
+  MessageSquare
 } from 'lucide-react';
 import {
   Tooltip,
@@ -22,10 +23,12 @@ interface CallControlsProps {
   videoEnabled: boolean;
   voiceOutEnabled: boolean;
   handRaised: boolean;
+  showASLPanel: boolean;
   onToggleAudio: () => void;
   onToggleVideo: () => void;
   onToggleVoiceOut: () => void;
   onToggleHandRaise: () => void;
+  onToggleASLPanel: () => void;
   onLeave: () => void;
 }
 
@@ -34,10 +37,12 @@ export function CallControls({
   videoEnabled,
   voiceOutEnabled,
   handRaised,
+  showASLPanel,
   onToggleAudio,
   onToggleVideo,
   onToggleVoiceOut,
   onToggleHandRaise,
+  onToggleASLPanel,
   onLeave,
 }: CallControlsProps) {
   return (
@@ -83,6 +88,16 @@ export function CallControls({
           variant="warning"
         />
 
+        {/* Chat / ASL Panel Toggle */}
+        <ControlToggle
+          active={showASLPanel}
+          activeIcon={<MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />}
+          inactiveIcon={<MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />}
+          onClick={onToggleASLPanel}
+          tooltip={showASLPanel ? 'Hide Chat & Interpreter' : 'Show Chat & Interpreter'}
+          variant="secondary"
+        />
+
         {/* Divider */}
         <div className="w-px h-8 sm:h-10 bg-black/10 mx-1 sm:mx-2" />
 
@@ -119,7 +134,7 @@ function ControlToggle({
   inactiveIcon: React.ReactNode,
   onClick: () => void,
   tooltip: string,
-  variant?: 'status' | 'brand' | 'warning'
+  variant?: 'status' | 'brand' | 'warning' | 'secondary'
 }) {
 
   const getColors = () => {
@@ -132,10 +147,17 @@ function ControlToggle({
         // Hand raised - yellow background
         return 'bg-yellow-400 text-black shadow-lg shadow-yellow-400/30 hover:bg-yellow-500 border-2 border-yellow-500 animate-pulse';
       }
+      if (variant === 'secondary') {
+        // Chat active
+        return 'bg-black text-yellow-400 shadow-lg hover:bg-black/90 border-2 border-black';
+      }
       // Audio/Video active - white background
       return 'bg-white text-black hover:bg-gray-100 border-2 border-gray-200 shadow-md';
     }
-    // Inactive state - red for disabled
+    // Inactive state
+    if (variant === 'secondary') {
+      return 'bg-black/5 text-black border-2 border-black/10 hover:bg-black/10 shadow-sm';
+    }
     return 'bg-red-500/20 text-red-600 border-2 border-red-500/40 hover:bg-red-500/30 shadow-sm';
   };
 

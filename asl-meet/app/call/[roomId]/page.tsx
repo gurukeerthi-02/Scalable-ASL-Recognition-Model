@@ -44,7 +44,7 @@ export default function CallPage() {
   const [voiceOutEnabled, setVoiceOutEnabled] = useState(false);
   const [handRaised, setHandRaised] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
-  const [showASLPanel, setShowASLPanel] = useState(true);
+  const [showASLPanel, setShowASLPanel] = useState(false);
   const lastRecognizedLetterRef = useRef<string>('');
 
   const { toast } = useToast();
@@ -201,7 +201,16 @@ export default function CallPage() {
     setVoiceOutEnabled(newState);
     setAslEnabled(newState);
     notifyASLToggle(newState);
+
+    // Automatically show panel when ASL is enabled
+    if (newState) {
+      setShowASLPanel(true);
+    }
   }, [voiceOutEnabled, notifyASLToggle]);
+
+  const handleToggleASLPanel = useCallback(() => {
+    setShowASLPanel(prev => !prev);
+  }, []);
 
   const handleToggleHandRaise = useCallback(() => {
     setHandRaised(!handRaised);
@@ -379,15 +388,6 @@ export default function CallPage() {
           </div>
 
           <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setShowASLPanel(!showASLPanel)}
-              className={`rounded-full ${showASLPanel ? 'bg-yellow-400 text-black' : 'bg-black/5 text-black hover:bg-black/10'}`}
-            >
-              <MessageSquare className="w-5 h-5" />
-            </Button>
-
             <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-black/5 rounded-full">
               <Users className="w-4 h-4 text-black" />
               <span className="text-xs font-semibold text-black">{peers.size + 1}</span>
@@ -502,10 +502,12 @@ export default function CallPage() {
               videoEnabled={videoEnabled}
               voiceOutEnabled={voiceOutEnabled}
               handRaised={handRaised}
+              showASLPanel={showASLPanel}
               onToggleAudio={toggleAudio}
               onToggleVideo={toggleVideo}
               onToggleVoiceOut={handleToggleVoiceOut}
               onToggleHandRaise={handleToggleHandRaise}
+              onToggleASLPanel={handleToggleASLPanel}
               onLeave={handleLeave}
             />
           </div>
