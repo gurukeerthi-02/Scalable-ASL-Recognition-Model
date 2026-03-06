@@ -48,7 +48,7 @@ export default function CallPage() {
   const lastRecognizedLetterRef = useRef<string>('');
 
   const { toast } = useToast();
-  const { speak } = useTTS({ enabled: true, rate: 1.0 });
+  const { speak } = useTTS({ enabled: true, rate: 1.0, volume: 1.0 });
 
   useEffect(() => {
     const fetchRoomDetails = async () => {
@@ -79,7 +79,9 @@ export default function CallPage() {
     if (wordMappings[upperText]) {
       return wordMappings[upperText];
     }
-    return text.split('').join(' ');
+    // If it's a single word (no spaces), speak it as a word, not as individual letters.
+    // If it's already multiple words, keep it as is.
+    return text;
   }, []);
 
   const handleRemoteASLToggle = useCallback(
