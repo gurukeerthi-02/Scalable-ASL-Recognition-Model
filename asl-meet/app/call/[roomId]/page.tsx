@@ -39,7 +39,7 @@ export default function CallPage() {
   const [participantId, setParticipantId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [sentenceBuffer, setSentenceBuffer] = useState<string>('');
-  const [receivedMessages, setReceivedMessages] = useState<Array<{ peerId: string, text: string, timestamp: number }>>([]);
+  const [receivedMessages, setReceivedMessages] = useState<Array<{ peerId: string, text: string, timestamp: number, displayName?: string }>>([]);
   const [lastRecognizedLetter, setLastRecognizedLetter] = useState<string>('');
   const [voiceOutEnabled, setVoiceOutEnabled] = useState(false);
   const [handRaised, setHandRaised] = useState(false);
@@ -92,15 +92,18 @@ export default function CallPage() {
   );
 
   const handleTextMessage = useCallback(
-    (remotePeerId: string, text: string) => {
-      if (remotePeerId === peerId) {
-        return;
-      }
-      setReceivedMessages(prev => [...prev, { peerId: remotePeerId, text, timestamp: Date.now() }]);
+    (remotePeerId: string, text: string, remoteDisplayName?: string) => {
+      setReceivedMessages(prev => [...prev, {
+        peerId: remotePeerId,
+        text,
+        timestamp: Date.now(),
+        displayName: remoteDisplayName || 'Participant'
+      }]);
+
       const speechText = convertToSpeechText(text);
       speak(speechText);
     },
-    [speak, convertToSpeechText, peerId]
+    [speak, convertToSpeechText]
   );
 
   const {
@@ -170,6 +173,14 @@ export default function CallPage() {
         description: `"${message}" has been shared with participants`,
         duration: 3000,
       });
+
+      // Add to own message list
+      setReceivedMessages(prev => [...prev, {
+        peerId,
+        text: message,
+        timestamp: Date.now(),
+        displayName: 'You'
+      }]);
 
       setSentenceBuffer('');
     }
@@ -368,6 +379,15 @@ export default function CallPage() {
           </div>
 
           <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowASLPanel(!showASLPanel)}
+              className={`rounded-full ${showASLPanel ? 'bg-yellow-400 text-black' : 'bg-black/5 text-black hover:bg-black/10'}`}
+            >
+              <MessageSquare className="w-5 h-5" />
+            </Button>
+
             <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-black/5 rounded-full">
               <Users className="w-4 h-4 text-black" />
               <span className="text-xs font-semibold text-black">{peers.size + 1}</span>
@@ -418,16 +438,16 @@ export default function CallPage() {
           </div>
 
           {/* ASL Panel - Desktop Sidebar / Mobile Bottom Sheet */}
-          {voiceOutEnabled && (
+          {showASLPanel && (
             <>
               {/* Desktop Sidebar */}
-              <div className={`hidden lg:flex lg:w-[360px] xl:w-[400px] flex-shrink-0 bg-white border-l border-black/10 flex-col shadow-2xl transition-all duration-300 ${showASLPanel ? 'translate-x-0' : 'translate-x-full'}`}>
+              <div className={`hidden lg:flex lg:w-[360px] xl:w-[400px] flex-shrink-0 bg-white border-l border-black/10 flex-col shadow-2xl transition-all duration-300`}>
                 <div className="p-4 border-b border-black/10 flex items-center justify-between bg-yellow-400/10">
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                    <span className="text-sm font-bold text-black">ASL Interpreter</span>
+                    <div className={`w-2 h-2 rounded-full ${voiceOutEnabled ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
+                    <span className="text-sm font-bold text-black">ASL Interpreter & Chat</span>
                   </div>
-                  <Badge className="text-[10px] bg-black text-yellow-400">Active</Badge>
+                  {voiceOutEnabled && <Badge className="text-[10px] bg-black text-yellow-400">Recognition Active</Badge>}
                 </div>
                 <div className="flex-1 overflow-hidden">
                   <ASLIndicator
@@ -445,13 +465,16 @@ export default function CallPage() {
 
               {/* Mobile Bottom Sheet */}
               <div className="lg:hidden absolute bottom-24 left-2 right-2 z-30 animate-in slide-in-from-bottom duration-300">
-                <div className="bg-white rounded-2xl shadow-2xl border border-black/10 flex flex-col overflow-hidden max-h-[40vh]">
+                <div className="bg-white rounded-2xl shadow-2xl border border-black/10 flex flex-col overflow-hidden max-h-[50vh]">
                   <div className="p-3 border-b border-black/10 flex items-center justify-between bg-yellow-400/5">
                     <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                      <span className="text-xs font-bold text-black uppercase tracking-wider">ASL Interpreter</span>
+                      <div className={`w-2 h-2 rounded-full ${voiceOutEnabled ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
+                      <span className="text-xs font-bold text-black uppercase tracking-wider">Interpreter & Chat</span>
                     </div>
-                    <Badge className="text-[9px] bg-black text-yellow-400 border-0 h-4">LIVE</Badge>
+                    {voiceOutEnabled && <Badge className="text-[9px] bg-black text-yellow-400 border-0 h-4">LIVE</Badge>}
+                    <Button variant="ghost" size="icon" onClick={() => setShowASLPanel(false)} className="h-6 w-6 rounded-full">
+                      <ChevronRight className="w-4 h-4 rotate-90" />
+                    </Button>
                   </div>
                   <div className="flex-1 overflow-y-auto">
                     <ASLIndicator

@@ -2,9 +2,10 @@
 
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Hand, Send, Trash2, Space, Zap, MessageSquare, Activity } from 'lucide-react';
+import { Hand, Send, Trash2, Space, Zap, MessageSquare, Activity, User, MessageCircle, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import { ASLRecognitionResponse } from '@/types';
 
@@ -16,7 +17,7 @@ interface ASLIndicatorProps {
   onSendSentence?: () => void;
   onClearSentence?: () => void;
   onAddSpace?: () => void;
-  receivedMessages?: Array<{ peerId: string, text: string, timestamp: number }>;
+  receivedMessages?: Array<{ peerId: string, text: string, timestamp: number, displayName?: string }>;
 }
 
 export function ASLIndicator({
@@ -29,191 +30,213 @@ export function ASLIndicator({
   onAddSpace,
   receivedMessages = []
 }: ASLIndicatorProps) {
-  if (!isActive) {
-    return null;
-  }
-
   return (
     <div className="flex flex-col h-full bg-white overflow-hidden">
-      {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-
-        {/* Real-time Recognition Card */}
-        <Card className="p-4 bg-yellow-400/10 border-2 border-yellow-400/30 shadow-lg">
-          <div className="flex items-start gap-3">
-            <div className="relative flex-shrink-0">
-              <div className="w-12 h-12 bg-yellow-400 rounded-xl flex items-center justify-center shadow-md">
-                <Activity className="w-6 h-6 text-black" />
-              </div>
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white shadow-sm animate-pulse" />
-            </div>
-
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <h3 className="text-xs font-bold uppercase tracking-wide text-black">Live Recognition</h3>
-                  {lastRecognition && (
-                    <Badge className={`text-[9px] font-black border-0 px-1.5 h-4 ${lastRecognition.mode === 1 ? 'bg-blue-600 text-white' :
-                      lastRecognition.mode === 2 ? 'bg-purple-600 text-white' :
-                        lastRecognition.mode === 3 ? 'bg-green-600 text-white' :
-                          'bg-gray-400 text-white'
-                      }`}>
-                      {lastRecognition.mode === 1 ? 'STATIC' :
-                        lastRecognition.mode === 2 ? 'DYNAMIC' :
-                          lastRecognition.mode === 3 ? 'RESULT' : 'IDLE'}
-                    </Badge>
-                  )}
-                </div>
-                <span className="text-[10px] font-mono text-black/60">{frameCount} frames</span>
-              </div>
-
-              {lastRecognition && lastRecognition.text ? (
-                <div className="space-y-3">
-                  <div className="flex items-baseline gap-2 flex-wrap">
-                    <span className="text-3xl md:text-4xl font-black text-black tracking-tight">
-                      {lastRecognition.text}
-                    </span>
-                    <Badge className="bg-black text-yellow-400 border-0 text-xs font-bold">
-                      {(lastRecognition.confidence * 100).toFixed(0)}%
-                    </Badge>
-                  </div>
-                  <div className="h-2 bg-black/10 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-yellow-400 transition-all duration-300 rounded-full"
-                      style={{ width: `${lastRecognition.confidence * 100}%` }}
-                    />
-                  </div>
-                </div>
-              ) : (
-                <div className="py-2 space-y-3">
-                  {/* Debug Metrics */}
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="bg-white p-2 rounded-lg border border-gray-200">
-                      <p className="text-[8px] uppercase text-black/50 font-bold mb-0.5">Motion</p>
-                      <p className="text-xs font-mono text-black">{(lastRecognition?.motion || 0).toFixed(4)}</p>
-                    </div>
-                    <div className="bg-white p-2 rounded-lg border border-gray-200">
-                      <p className="text-[8px] uppercase text-black/50 font-bold mb-0.5">Mode</p>
-                      <p className="text-xs font-mono text-black">
-                        {lastRecognition?.mode === 0 ? 'IDLE' :
-                          lastRecognition?.mode === 1 ? 'STATIC' :
-                            lastRecognition?.mode === 2 ? 'DYNAMIC' : 'HOLD'}
-                      </p>
-                    </div>
-                    <div className="bg-white p-2 rounded-lg border border-gray-200">
-                      <p className="text-[8px] uppercase text-black/50 font-bold mb-0.5">Stability</p>
-                      <p className="text-xs font-mono text-black">{lastRecognition?.stable_count || 0}/5</p>
-                    </div>
-                    <div className="bg-white p-2 rounded-lg border border-gray-200">
-                      <p className="text-[8px] uppercase text-black/50 font-bold mb-0.5">Buffer</p>
-                      <p className="text-xs font-mono text-black">{lastRecognition?.buffer_size || 0}/30</p>
-                    </div>
-                  </div>
-
-                  <div className="h-1.5 w-full bg-black/10 overflow-hidden rounded-full">
-                    <div
-                      className="h-full bg-yellow-400 transition-all duration-300 rounded-full"
-                      style={{ width: `${((lastRecognition?.buffer_size || 0) / 30) * 100}%` }}
-                    />
-                  </div>
-                  <p className="text-xs text-black/60 font-medium">Analyzing hand gestures...</p>
-                </div>
+      <Tabs defaultValue="interpreter" className="flex-1 flex flex-col overflow-hidden">
+        <div className="px-4 pt-2 bg-gray-50/50">
+          <TabsList className="grid w-full grid-cols-2 bg-black/5 p-1 rounded-xl">
+            <TabsTrigger
+              value="interpreter"
+              className="rounded-lg data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-sm font-bold text-xs flex items-center gap-2"
+            >
+              <Activity className="w-3.5 h-3.5" />
+              Interpreter
+            </TabsTrigger>
+            <TabsTrigger
+              value="chat"
+              className="rounded-lg data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-sm font-bold text-xs flex items-center gap-2"
+            >
+              <MessageCircle className="w-3.5 h-3.5" />
+              Chat
+              {receivedMessages.length > 0 && (
+                <Badge variant="secondary" className="ml-1 h-4 min-w-4 p-0 flex items-center justify-center text-[8px] bg-yellow-400 text-black border-0">
+                  {receivedMessages.length}
+                </Badge>
               )}
-            </div>
-          </div>
-        </Card>
-
-        {/* Translation Buffer */}
-        <div className="space-y-2">
-          <h4 className="text-[10px] font-bold uppercase tracking-wider text-black/60 ml-1">Message Buffer</h4>
-          <div className="relative group">
-            <div className="min-h-[80px] md:min-h-[100px] p-3 md:p-4 bg-gray-50 border-2 border-gray-200 rounded-xl text-base md:text-lg font-medium text-black leading-relaxed group-hover:border-gray-300 transition-colors">
-              {sentenceBuffer || (
-                <span className="text-black/40 italic text-sm font-normal">Start signing to build your message...</span>
-              )}
-            </div>
-            <div className="absolute bottom-2 right-2 flex gap-1">
-              <Button
-                size="icon"
-                variant="ghost"
-                onClick={onAddSpace}
-                className="h-8 w-8 text-black/50 hover:text-black hover:bg-black/5 rounded-lg"
-                title="Add Space"
-              >
-                <Space className="w-4 h-4" />
-              </Button>
-              <Button
-                size="icon"
-                variant="ghost"
-                onClick={onClearSentence}
-                disabled={!sentenceBuffer.trim()}
-                className="h-8 w-8 text-black/50 hover:text-red-600 hover:bg-red-50 rounded-lg disabled:opacity-30"
-                title="Clear Buffer"
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-
-          {/* Character count */}
-          {sentenceBuffer && (
-            <div className="flex items-center justify-between text-xs text-black/50 px-1">
-              <span>{sentenceBuffer.length} characters</span>
-              <span>{sentenceBuffer.split(' ').filter(w => w.length > 0).length} words</span>
-            </div>
-          )}
+            </TabsTrigger>
+          </TabsList>
         </div>
 
-        {/* Recent Messages */}
-        {receivedMessages.length > 0 && (
-          <div className="space-y-2">
-            <h4 className="text-[10px] font-bold uppercase tracking-wider text-black/60 ml-1 flex items-center gap-1.5">
-              <MessageSquare className="w-3 h-3" />
-              Recent Messages
-            </h4>
-            <div className="space-y-2">
-              {receivedMessages.slice(-5).reverse().map((msg, idx) => (
-                <div key={idx} className="p-3 bg-yellow-400/5 border border-yellow-400/20 rounded-xl animate-in slide-in-from-right duration-300">
-                  <p className="text-sm font-medium text-black">{msg.text}</p>
-                  <p className="text-[10px] text-black/50 mt-1 uppercase font-semibold tracking-wide">From participant</p>
+        <TabsContent value="interpreter" className="flex-1 overflow-y-auto m-0 p-4 space-y-5 focus-visible:outline-none focus-visible:ring-0">
+          {!isActive && (
+            <div className="bg-gray-50 border border-gray-200 rounded-2xl p-6 text-center">
+              <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Sparkles className="w-6 h-6 text-gray-400" />
+              </div>
+              <h4 className="text-sm font-bold text-gray-900 mb-1">Interpreter Disabled</h4>
+              <p className="text-xs text-gray-500 mb-4">Enable the interpreter in the call controls to start recognition.</p>
+            </div>
+          )}
+
+          <div className={!isActive ? 'opacity-40 pointer-events-none grayscale' : ''}>
+            {/* Real-time Recognition Card */}
+            <Card className="p-4 bg-yellow-400/10 border-2 border-yellow-400/30 shadow-lg">
+              <div className="flex items-start gap-3">
+                <div className="relative flex-shrink-0">
+                  <div className="w-12 h-12 bg-yellow-400 rounded-xl flex items-center justify-center shadow-md">
+                    <Activity className="w-6 h-6 text-black" />
+                  </div>
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white shadow-sm animate-pulse" />
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-xs font-bold uppercase tracking-wide text-black">Live Recognition</h3>
+                      {lastRecognition && (
+                        <Badge className={`text-[9px] font-black border-0 px-1.5 h-4 ${lastRecognition.mode === 1 ? 'bg-blue-600 text-white' :
+                          lastRecognition.mode === 2 ? 'bg-purple-600 text-white' :
+                            lastRecognition.mode === 3 ? 'bg-green-600 text-white' :
+                              'bg-gray-400 text-white'
+                          }`}>
+                          {lastRecognition.mode === 1 ? 'STATIC' :
+                            lastRecognition.mode === 2 ? 'DYNAMIC' :
+                              lastRecognition.mode === 3 ? 'RESULT' : 'IDLE'}
+                        </Badge>
+                      )}
+                    </div>
+                    <span className="text-[10px] font-mono text-black/60">{frameCount} frames</span>
+                  </div>
+
+                  {lastRecognition && lastRecognition.text ? (
+                    <div className="space-y-3">
+                      <div className="flex items-baseline gap-2 flex-wrap">
+                        <span className="text-3xl md:text-4xl font-black text-black tracking-tight">
+                          {lastRecognition.text}
+                        </span>
+                        <Badge className="bg-black text-yellow-400 border-0 text-xs font-bold">
+                          {(lastRecognition.confidence * 100).toFixed(0)}%
+                        </Badge>
+                      </div>
+                      <div className="h-2 bg-black/10 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-yellow-400 transition-all duration-300 rounded-full"
+                          style={{ width: `${lastRecognition.confidence * 100}%` }}
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="py-2 space-y-3">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="bg-white p-2 rounded-lg border border-gray-200">
+                          <p className="text-[8px] uppercase text-black/50 font-bold mb-0.5">Motion</p>
+                          <p className="text-xs font-mono text-black">{(lastRecognition?.motion || 0).toFixed(4)}</p>
+                        </div>
+                        <div className="bg-white p-2 rounded-lg border border-gray-200">
+                          <p className="text-[8px] uppercase text-black/50 font-bold mb-0.5">Mode</p>
+                          <p className="text-xs font-mono text-black">
+                            {lastRecognition?.mode === 0 ? 'IDLE' :
+                              lastRecognition?.mode === 1 ? 'STATIC' :
+                                lastRecognition?.mode === 2 ? 'DYNAMIC' : 'HOLD'}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="h-1.5 w-full bg-black/10 overflow-hidden rounded-full">
+                        <div
+                          className="h-full bg-yellow-400 transition-all duration-300 rounded-full"
+                          style={{ width: `${((lastRecognition?.buffer_size || 0) / 30) * 100}%` }}
+                        />
+                      </div>
+                      <p className="text-xs text-black/60 font-medium italic animate-pulse">Analyzing hand gestures...</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </Card>
+
+            {/* Translation Buffer */}
+            <div className="space-y-3">
+              <h4 className="text-[10px] font-bold uppercase tracking-wider text-black/60 ml-1">Current Sentence</h4>
+              <div className="relative group">
+                <div className="min-h-[120px] p-4 bg-gray-50 border-2 border-gray-200 rounded-2xl text-lg font-medium text-black leading-relaxed group-hover:border-gray-300 transition-colors shadow-inner">
+                  {sentenceBuffer || (
+                    <span className="text-black/30 italic text-sm font-normal">Signs will appear here as you make them...</span>
+                  )}
+                </div>
+                <div className="absolute bottom-3 right-3 flex gap-1.5">
+                  <Button
+                    size="icon"
+                    variant="secondary"
+                    onClick={onAddSpace}
+                    className="h-9 w-9 bg-white text-black border border-gray-200 hover:bg-black hover:text-white rounded-xl shadow-sm transition-all"
+                    title="Add Space"
+                  >
+                    <Space className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="secondary"
+                    onClick={onClearSentence}
+                    disabled={!sentenceBuffer.trim()}
+                    className="h-9 w-9 bg-white text-black border border-gray-200 hover:bg-red-600 hover:text-white hover:border-red-600 rounded-xl shadow-sm transition-all disabled:opacity-30"
+                    title="Clear Buffer"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
+                <p className="text-[9px] font-bold text-black/40 uppercase tracking-widest mb-1">Words</p>
+                <p className="text-xl font-black text-black">{sentenceBuffer.split(' ').filter(w => w.length > 0).length}</p>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
+                <p className="text-[9px] font-bold text-black/40 uppercase tracking-widest mb-1">Characters</p>
+                <p className="text-xl font-black text-black">{sentenceBuffer.length}</p>
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="chat" className="flex-1 overflow-y-auto m-0 p-4 space-y-3 focus-visible:outline-none focus-visible:ring-0">
+          {receivedMessages.length === 0 ? (
+            <div className="h-full flex flex-col items-center justify-center text-center p-8">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                <MessageSquare className="w-8 h-8 text-black/20" />
+              </div>
+              <h3 className="text-sm font-bold text-black mb-1">No messages yet</h3>
+              <p className="text-xs text-black/40 max-w-[200px]">Sent and received messages will be displayed here.</p>
+            </div>
+          ) : (
+            <div className="space-y-3 pb-4">
+              {receivedMessages.slice().reverse().map((msg, idx) => (
+                <div
+                  key={idx}
+                  className={`flex flex-col ${msg.displayName === 'You' ? 'items-end' : 'items-start'} animate-in slide-in-from-bottom-2 duration-300`}
+                >
+                  <div className="flex items-center gap-1.5 mb-1 px-1">
+                    <span className="text-[10px] font-bold text-black/60 uppercase tracking-wide">
+                      {msg.displayName || 'Participant'}
+                    </span>
+                    <span className="text-[9px] text-black/30">
+                      {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+                  <div className={`max-w-[85%] p-3 rounded-2xl shadow-sm text-sm font-medium ${msg.displayName === 'You'
+                    ? 'bg-black text-yellow-400 rounded-tr-none'
+                    : 'bg-yellow-400/20 text-black border border-yellow-400/30 rounded-tl-none'
+                    }`}>
+                    {msg.text}
+                  </div>
                 </div>
               ))}
             </div>
-          </div>
-        )}
+          )}
+        </TabsContent>
+      </Tabs>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-2 gap-2">
-          <Card className="p-3 bg-white border border-gray-200 shadow-sm">
-            <div className="text-2xl font-bold text-black mb-0.5">
-              {sentenceBuffer.length}
-            </div>
-            <div className="text-[10px] text-black/60 font-semibold uppercase tracking-wide">Characters</div>
-          </Card>
-          <Card className="p-3 bg-white border border-gray-200 shadow-sm">
-            <div className="text-2xl font-bold text-black mb-0.5">
-              {frameCount}
-            </div>
-            <div className="text-[10px] text-black/60 font-semibold uppercase tracking-wide">Frames</div>
-          </Card>
-        </div>
-      </div>
-
-      {/* Action Footer */}
-      <div className="p-3 md:p-4 bg-gradient-to-t from-gray-50 to-white border-t border-gray-200">
+      {/* Persistent Footer Actions */}
+      <div className="p-4 bg-white border-t border-gray-100">
         <Button
           onClick={onSendSentence}
           disabled={!sentenceBuffer.trim()}
-          className="w-full h-10 md:h-12 rounded-xl bg-black hover:bg-black/90 text-yellow-400 font-bold shadow-lg transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full h-12 rounded-xl bg-black hover:bg-black/90 text-yellow-400 font-bold shadow-lg transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed group"
         >
-          <Send className="w-4 h-4 mr-2" />
-          Send Message
+          <Send className="w-4 h-4 mr-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+          Send Integrated Message
         </Button>
-
-        {/* Helper text */}
-        <p className="text-center text-[10px] text-black/50 mt-2">
-          Message will be sent to all participants
-        </p>
       </div>
     </div>
   );

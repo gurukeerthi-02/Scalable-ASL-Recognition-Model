@@ -14,7 +14,7 @@ interface UseSignalingProps {
   onPeerJoined: (peerId: string, displayName: string) => void;
   onPeerLeft: (peerId: string) => void;
   onASLToggle: (peerId: string, enabled: boolean) => void;
-  onTextMessage?: (peerId: string, text: string) => void;
+  onTextMessage?: (peerId: string, text: string, displayName?: string) => void;
 }
 
 export function useSignaling({
@@ -78,9 +78,9 @@ export function useSignaling({
       onASLToggle(remotePeerId, enabled);
     });
 
-    socket.on('text-message', ({ peerId: remotePeerId, text }) => {
+    socket.on('text-message', ({ peerId: remotePeerId, text, displayName: remoteDisplayName }) => {
       console.log('Text message from:', remotePeerId, text);
-      onTextMessage?.(remotePeerId, text);
+      onTextMessage?.(remotePeerId, text, remoteDisplayName);
     });
 
     socket.on('disconnect', () => {
@@ -144,10 +144,11 @@ export function useSignaling({
       socketRef.current?.emit('text-message', {
         roomId,
         peerId,
+        displayName,
         text,
       });
     },
-    [roomId, peerId]
+    [roomId, peerId, displayName]
   );
 
   const leaveRoom = useCallback(() => {

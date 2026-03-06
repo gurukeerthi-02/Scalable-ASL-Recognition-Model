@@ -10,7 +10,7 @@ interface UseWebRTCProps {
   peerId: string;
   displayName: string;
   onRemoteASLToggle: (peerId: string, enabled: boolean) => void;
-  onTextMessage?: (peerId: string, text: string) => void;
+  onTextMessage?: (peerId: string, text: string, displayName?: string) => void;
 }
 
 export function useWebRTC({ roomId, peerId, displayName, onRemoteASLToggle, onTextMessage }: UseWebRTCProps) {

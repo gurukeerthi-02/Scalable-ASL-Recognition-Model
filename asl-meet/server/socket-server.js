@@ -117,11 +117,12 @@ io.on('connection', (socket) => {
     });
   });
 
-  socket.on('text-message', ({ roomId, peerId, text }) => {
-    console.log(`Text message from ${peerId}: ${text}`);
+  socket.on('text-message', ({ roomId, peerId, displayName, text }) => {
+    console.log(`Text message from ${peerId} (${displayName}): ${text}`);
 
     socket.to(roomId).emit('text-message', {
       peerId,
+      displayName,
       text,
     });
   });
