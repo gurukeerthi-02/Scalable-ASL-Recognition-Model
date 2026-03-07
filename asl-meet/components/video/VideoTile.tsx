@@ -38,11 +38,23 @@ export function VideoTile({
     if (videoRef.current && stream) {
       videoRef.current.srcObject = stream;
 
+      const handleTrackAdded = () => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      };
+
+      stream.addEventListener('addtrack', handleTrackAdded);
+
       if (onVideoElementReady) {
         onVideoElementReady(videoRef.current);
       }
+
+      return () => {
+        stream.removeEventListener('addtrack', handleTrackAdded);
+      };
     }
-  }, [stream, onVideoElementReady]);
+  }, [stream, stream?.getTracks().length, onVideoElementReady]);
 
   return (
     <div
@@ -121,15 +133,15 @@ export function VideoTile({
       {/* Hover Controls */}
       <div className={`absolute top-4 right-4 flex flex-col gap-2 transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'}`}>
         {onPin && (
-          <ControlButton 
-            icon={<Pin className="w-4 h-4" />} 
+          <ControlButton
+            icon={<Pin className="w-4 h-4" />}
             onClick={onPin}
             label="Pin"
           />
         )}
         {onFullscreen && (
-          <ControlButton 
-            icon={<Maximize2 className="w-4 h-4" />} 
+          <ControlButton
+            icon={<Maximize2 className="w-4 h-4" />}
             onClick={onFullscreen}
             label="Fullscreen"
           />
@@ -146,13 +158,13 @@ export function VideoTile({
   );
 }
 
-function ControlButton({ 
-  icon, 
-  onClick, 
-  label 
-}: { 
-  icon: React.ReactNode; 
-  onClick: () => void; 
+function ControlButton({
+  icon,
+  onClick,
+  label
+}: {
+  icon: React.ReactNode;
+  onClick: () => void;
   label?: string;
 }) {
   return (

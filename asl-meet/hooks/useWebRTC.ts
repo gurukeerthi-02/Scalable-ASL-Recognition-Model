@@ -21,6 +21,23 @@ export function useWebRTC({ roomId, peerId, displayName, onRemoteASLToggle, onTe
 
   const peersRef = useRef<Map<string, PeerConnection>>(new Map());
   const localStreamRef = useRef<MediaStream | null>(null);
+  const pendingCandidates = useRef<Map<string, RTCIceCandidateInit[]>>(new Map());
+
+  // Refs for signaling functions to avoid circular dependencies
+  const sendOfferRef = useRef<((targetPeerId: string, offer: RTCSessionDescriptionInit) => void) | null>(null);
+  const sendAnswerRef = useRef<((targetPeerId: string, answer: RTCSessionDescriptionInit) => void) | null>(null);
+  const sendIceCandidateRef = useRef<((targetPeerId: string, candidate: RTCIceCandidateInit) => void) | null>(null);
+  const notifyMediaToggleRef = useRef<((type: 'audio' | 'video', enabled: boolean) => void) | null>(null);
+
+  const handlePeerLeft = useCallback((remotePeerId: string) => {
+    const peerData = peersRef.current.get(remotePeerId);
+    if (peerData) {
+      peerData.connection.close();
+      peersRef.current.delete(remotePeerId);
+      pendingCandidates.current.delete(remotePeerId);
+      setPeers(new Map(peersRef.current));
+    }
+  }, []);
 
   const handlePeerJoined = useCallback(async (remotePeerId: string, remoteDisplayName: string) => {
     console.log('Creating offer for new peer:', remotePeerId);
@@ -29,13 +46,9 @@ export function useWebRTC({ roomId, peerId, displayName, onRemoteASLToggle, onTe
 
     if (localStreamRef.current) {
       console.log('Adding local tracks to peer connection for:', remotePeerId);
-      console.log('Local stream tracks:', localStreamRef.current.getTracks().map(t => ({ kind: t.kind, enabled: t.enabled })));
       localStreamRef.current.getTracks().forEach((track) => {
-        console.log('Adding track:', track.kind, track.enabled);
         peerConnection.addTrack(track, localStreamRef.current!);
       });
-    } else {
-      console.log('No local stream available when creating peer connection for:', remotePeerId);
     }
 
     const peerData: PeerConnection = {
@@ -53,14 +66,12 @@ export function useWebRTC({ roomId, peerId, displayName, onRemoteASLToggle, onTe
 
     peerConnection.onicecandidate = (event) => {
       if (event.candidate) {
-        sendIceCandidate(remotePeerId, event.candidate.toJSON());
+        sendIceCandidateRef.current?.(remotePeerId, event.candidate.toJSON());
       }
     };
 
     peerConnection.ontrack = (event) => {
       console.log('Received remote track from:', remotePeerId, event.streams[0]);
-      console.log('Track kind:', event.track.kind, 'enabled:', event.track.enabled);
-      console.log('Stream tracks:', event.streams[0].getTracks().map(t => ({ kind: t.kind, enabled: t.enabled })));
       peerData.stream = event.streams[0];
       setPeers(new Map(peersRef.current));
     };
@@ -70,38 +81,33 @@ export function useWebRTC({ roomId, peerId, displayName, onRemoteASLToggle, onTe
       console.log(`ICE connection state for ${remotePeerId}:`, state);
 
       if (state === 'failed') {
-        console.warn(`ICE connection failed for ${remotePeerId}. Cleaning up.`);
         handlePeerLeft(remotePeerId);
-      } else if (state === 'disconnected') {
-        console.log(`ICE connection disconnected for ${remotePeerId}. The browser may try to reconnect.`);
-        // Don't close immediately, let the browser try to recover
-      } else if (state === 'connected' || state === 'completed') {
-        console.log(`ICE connection established with ${remotePeerId}`);
       }
     };
 
     const offer = await peerConnection.createOffer();
     await peerConnection.setLocalDescription(offer);
-    sendOffer(remotePeerId, offer);
-  }, []);
+    sendOfferRef.current?.(remotePeerId, offer);
+  }, [handlePeerLeft]);
+
+  const handleExistingPeers = useCallback(async (existingPeers: Array<{ peerId: string, displayName: string }>) => {
+    existingPeers.forEach(peer => {
+      if (!peersRef.current.has(peer.peerId)) {
+        handlePeerJoined(peer.peerId, peer.displayName);
+      }
+    });
+  }, [handlePeerJoined]);
 
   const handleOffer = useCallback(async (remotePeerId: string, offer: RTCSessionDescriptionInit) => {
     console.log('Handling offer from:', remotePeerId);
-
     let peerData = peersRef.current.get(remotePeerId);
 
     if (!peerData) {
       const peerConnection = createPeerConnection();
-
       if (localStreamRef.current) {
-        console.log('Adding local tracks to peer connection for:', remotePeerId);
-        console.log('Local stream tracks:', localStreamRef.current.getTracks().map(t => ({ kind: t.kind, enabled: t.enabled })));
         localStreamRef.current.getTracks().forEach((track) => {
-          console.log('Adding track:', track.kind, track.enabled);
           peerConnection.addTrack(track, localStreamRef.current!);
         });
-      } else {
-        console.log('No local stream available when handling offer from:', remotePeerId);
       }
 
       peerData = {
@@ -118,29 +124,18 @@ export function useWebRTC({ roomId, peerId, displayName, onRemoteASLToggle, onTe
 
       peerConnection.onicecandidate = (event) => {
         if (event.candidate) {
-          sendIceCandidate(remotePeerId, event.candidate.toJSON());
+          sendIceCandidateRef.current?.(remotePeerId, event.candidate.toJSON());
         }
       };
 
       peerConnection.ontrack = (event) => {
-        console.log('Received remote track from:', remotePeerId, event.streams[0]);
-        console.log('Track kind:', event.track.kind, 'enabled:', event.track.enabled);
-        console.log('Stream tracks:', event.streams[0].getTracks().map(t => ({ kind: t.kind, enabled: t.enabled })));
         peerData!.stream = event.streams[0];
         setPeers(new Map(peersRef.current));
       };
 
       peerConnection.oniceconnectionstatechange = () => {
-        const state = peerConnection.iceConnectionState;
-        console.log(`ICE connection state for ${remotePeerId}:`, state);
-
-        if (state === 'failed') {
-          console.warn(`ICE connection failed for ${remotePeerId}. Cleaning up.`);
+        if (peerConnection.iceConnectionState === 'failed') {
           handlePeerLeft(remotePeerId);
-        } else if (state === 'disconnected') {
-          console.log(`ICE connection disconnected for ${remotePeerId}. The browser may try to reconnect.`);
-        } else if (state === 'connected' || state === 'completed') {
-          console.log(`ICE connection established with ${remotePeerId}`);
         }
       };
     }
@@ -148,35 +143,41 @@ export function useWebRTC({ roomId, peerId, displayName, onRemoteASLToggle, onTe
     await peerData.connection.setRemoteDescription(new RTCSessionDescription(offer));
     const answer = await peerData.connection.createAnswer();
     await peerData.connection.setLocalDescription(answer);
-    sendAnswer(remotePeerId, answer);
+    sendAnswerRef.current?.(remotePeerId, answer);
 
     setPeers(new Map(peersRef.current));
-  }, []);
+
+    const pending = pendingCandidates.current.get(remotePeerId) || [];
+    for (const candidate of pending) {
+      await peerData.connection.addIceCandidate(new RTCIceCandidate(candidate));
+    }
+    pendingCandidates.current.delete(remotePeerId);
+  }, [handlePeerLeft]);
 
   const handleAnswer = useCallback(async (remotePeerId: string, answer: RTCSessionDescriptionInit) => {
     const peerData = peersRef.current.get(remotePeerId);
     if (peerData) {
       await peerData.connection.setRemoteDescription(new RTCSessionDescription(answer));
+      const pending = pendingCandidates.current.get(remotePeerId) || [];
+      for (const candidate of pending) {
+        await peerData.connection.addIceCandidate(new RTCIceCandidate(candidate));
+      }
+      pendingCandidates.current.delete(remotePeerId);
     }
   }, []);
 
   const handleIceCandidate = useCallback(async (remotePeerId: string, candidate: RTCIceCandidateInit) => {
     const peerData = peersRef.current.get(remotePeerId);
-    if (peerData) {
+    if (peerData && peerData.connection.remoteDescription) {
       try {
         await peerData.connection.addIceCandidate(new RTCIceCandidate(candidate));
       } catch (error) {
         console.error('Error adding ICE candidate:', error);
       }
-    }
-  }, []);
-
-  const handlePeerLeft = useCallback((remotePeerId: string) => {
-    const peerData = peersRef.current.get(remotePeerId);
-    if (peerData) {
-      peerData.connection.close();
-      peersRef.current.delete(remotePeerId);
-      setPeers(new Map(peersRef.current));
+    } else {
+      const pending = pendingCandidates.current.get(remotePeerId) || [];
+      pending.push(candidate);
+      pendingCandidates.current.set(remotePeerId, pending);
     }
   }, []);
 
@@ -206,11 +207,20 @@ export function useWebRTC({ roomId, peerId, displayName, onRemoteASLToggle, onTe
     onAnswer: handleAnswer,
     onIceCandidate: handleIceCandidate,
     onPeerJoined: handlePeerJoined,
+    onExistingPeers: handleExistingPeers,
     onPeerLeft: handlePeerLeft,
     onASLToggle: handleASLToggle,
     onMediaToggle: handleMediaToggle,
     onTextMessage,
   });
+
+  // Sync signaling functions to refs
+  useEffect(() => {
+    sendOfferRef.current = sendOffer;
+    sendAnswerRef.current = sendAnswer;
+    sendIceCandidateRef.current = sendIceCandidate;
+    notifyMediaToggleRef.current = notifyMediaToggle;
+  }, [sendOffer, sendAnswer, sendIceCandidate, notifyMediaToggle]);
 
   useEffect(() => {
     const initLocalStream = async () => {
@@ -241,18 +251,18 @@ export function useWebRTC({ roomId, peerId, displayName, onRemoteASLToggle, onTe
       const newState = !audioEnabled;
       toggleAudioTrack(localStreamRef.current, newState);
       setAudioEnabled(newState);
-      notifyMediaToggle('audio', newState);
+      notifyMediaToggleRef.current?.('audio', newState);
     }
-  }, [audioEnabled, notifyMediaToggle]);
+  }, [audioEnabled]);
 
   const toggleVideo = useCallback(() => {
     if (localStreamRef.current) {
       const newState = !videoEnabled;
       toggleVideoTrack(localStreamRef.current, newState);
       setVideoEnabled(newState);
-      notifyMediaToggle('video', newState);
+      notifyMediaToggleRef.current?.('video', newState);
     }
-  }, [videoEnabled, notifyMediaToggle]);
+  }, [videoEnabled]);
 
   return {
     localStream,

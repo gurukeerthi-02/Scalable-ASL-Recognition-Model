@@ -12,6 +12,7 @@ interface UseSignalingProps {
   onAnswer: (peerId: string, answer: RTCSessionDescriptionInit) => void;
   onIceCandidate: (peerId: string, candidate: RTCIceCandidateInit) => void;
   onPeerJoined: (peerId: string, displayName: string) => void;
+  onExistingPeers?: (peers: Array<{ peerId: string, displayName: string }>) => void;
   onPeerLeft: (peerId: string) => void;
   onASLToggle: (peerId: string, enabled: boolean) => void;
   onMediaToggle?: (peerId: string, type: 'audio' | 'video', enabled: boolean) => void;
@@ -26,6 +27,7 @@ export function useSignaling({
   onAnswer,
   onIceCandidate,
   onPeerJoined,
+  onExistingPeers,
   onPeerLeft,
   onASLToggle,
   onMediaToggle,
@@ -49,6 +51,11 @@ export function useSignaling({
     socket.on('connect', () => {
       console.log('Socket connected:', socket.id);
       socket.emit('join-room', { roomId, peerId, displayName });
+    });
+
+    socket.on('existing-peers', ({ peers }) => {
+      console.log('Existing peers received:', peers.length);
+      onExistingPeers?.(peers);
     });
 
     socket.on('peer-joined', ({ peerId: remotePeerId, displayName: remoteDisplayName }) => {
@@ -98,7 +105,7 @@ export function useSignaling({
     return () => {
       socket.disconnect();
     };
-  }, [roomId, peerId, displayName, onOffer, onAnswer, onIceCandidate, onPeerJoined, onPeerLeft, onASLToggle, onMediaToggle, onTextMessage]);
+  }, [roomId, peerId, displayName, onOffer, onAnswer, onIceCandidate, onPeerJoined, onExistingPeers, onPeerLeft, onASLToggle, onMediaToggle, onTextMessage]);
 
   const sendOffer = useCallback(
     (targetPeerId: string, offer: RTCSessionDescriptionInit) => {

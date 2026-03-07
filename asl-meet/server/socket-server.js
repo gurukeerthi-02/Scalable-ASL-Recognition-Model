@@ -41,6 +41,7 @@ io.on('connection', (socket) => {
     }));
 
     console.log(`Existing peers in room ${roomId}:`, existingPeers);
+    socket.emit('existing-peers', { peers: existingPeers });
 
     // Notify existing peers about new peer
     roomPeers.forEach((peerInfo, existingPeerId) => {
