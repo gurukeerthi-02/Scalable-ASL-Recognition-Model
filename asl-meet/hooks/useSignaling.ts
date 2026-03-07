@@ -14,6 +14,7 @@ interface UseSignalingProps {
   onPeerJoined: (peerId: string, displayName: string) => void;
   onPeerLeft: (peerId: string) => void;
   onASLToggle: (peerId: string, enabled: boolean) => void;
+  onMediaToggle?: (peerId: string, type: 'audio' | 'video', enabled: boolean) => void;
   onTextMessage?: (peerId: string, text: string, displayName?: string) => void;
 }
 
@@ -27,6 +28,7 @@ export function useSignaling({
   onPeerJoined,
   onPeerLeft,
   onASLToggle,
+  onMediaToggle,
   onTextMessage,
 }: UseSignalingProps) {
   const socketRef = useRef<Socket | null>(null);
@@ -38,7 +40,8 @@ export function useSignaling({
     const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
 
     socketRef.current = io(SOCKET_URL, {
-      transports: ['websocket'],
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
     });
 
     const socket = socketRef.current;
@@ -78,6 +81,11 @@ export function useSignaling({
       onASLToggle(remotePeerId, enabled);
     });
 
+    socket.on('media-toggle', ({ peerId: remotePeerId, type, enabled }) => {
+      console.log('Media toggle from:', remotePeerId, type, enabled);
+      onMediaToggle?.(remotePeerId, type, enabled);
+    });
+
     socket.on('text-message', ({ peerId: remotePeerId, text, displayName: remoteDisplayName }) => {
       console.log('Text message from:', remotePeerId, text);
       onTextMessage?.(remotePeerId, text, remoteDisplayName);
@@ -90,7 +98,7 @@ export function useSignaling({
     return () => {
       socket.disconnect();
     };
-  }, [roomId, peerId, displayName, onOffer, onAnswer, onIceCandidate, onPeerJoined, onPeerLeft, onASLToggle, onTextMessage]);
+  }, [roomId, peerId, displayName, onOffer, onAnswer, onIceCandidate, onPeerJoined, onPeerLeft, onASLToggle, onMediaToggle, onTextMessage]);
 
   const sendOffer = useCallback(
     (targetPeerId: string, offer: RTCSessionDescriptionInit) => {
@@ -139,6 +147,18 @@ export function useSignaling({
     [roomId, peerId]
   );
 
+  const notifyMediaToggle = useCallback(
+    (type: 'audio' | 'video', enabled: boolean) => {
+      socketRef.current?.emit('media-toggle', {
+        roomId,
+        peerId,
+        type,
+        enabled,
+      });
+    },
+    [roomId, peerId]
+  );
+
   const sendTextMessage = useCallback(
     (text: string) => {
       socketRef.current?.emit('text-message', {
@@ -161,6 +181,7 @@ export function useSignaling({
     sendAnswer,
     sendIceCandidate,
     notifyASLToggle,
+    notifyMediaToggle,
     sendTextMessage,
     leaveRoom,
   };

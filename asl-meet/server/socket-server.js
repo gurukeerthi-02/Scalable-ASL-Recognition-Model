@@ -117,6 +117,16 @@ io.on('connection', (socket) => {
     });
   });
 
+  socket.on('media-toggle', ({ roomId, peerId, type, enabled }) => {
+    console.log(`Media toggle from ${peerId}: ${type} ${enabled}`);
+
+    socket.to(roomId).emit('media-toggle', {
+      peerId,
+      type,
+      enabled,
+    });
+  });
+
   socket.on('text-message', ({ roomId, peerId, displayName, text }) => {
     console.log(`Text message from ${peerId} (${displayName}): ${text}`);
 

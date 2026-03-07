@@ -66,10 +66,17 @@ export function useWebRTC({ roomId, peerId, displayName, onRemoteASLToggle, onTe
     };
 
     peerConnection.oniceconnectionstatechange = () => {
-      console.log(`ICE connection state for ${remotePeerId}:`, peerConnection.iceConnectionState);
-      if (peerConnection.iceConnectionState === 'disconnected' ||
-        peerConnection.iceConnectionState === 'failed') {
+      const state = peerConnection.iceConnectionState;
+      console.log(`ICE connection state for ${remotePeerId}:`, state);
+
+      if (state === 'failed') {
+        console.warn(`ICE connection failed for ${remotePeerId}. Cleaning up.`);
         handlePeerLeft(remotePeerId);
+      } else if (state === 'disconnected') {
+        console.log(`ICE connection disconnected for ${remotePeerId}. The browser may try to reconnect.`);
+        // Don't close immediately, let the browser try to recover
+      } else if (state === 'connected' || state === 'completed') {
+        console.log(`ICE connection established with ${remotePeerId}`);
       }
     };
 
@@ -124,10 +131,16 @@ export function useWebRTC({ roomId, peerId, displayName, onRemoteASLToggle, onTe
       };
 
       peerConnection.oniceconnectionstatechange = () => {
-        console.log(`ICE connection state for ${remotePeerId}:`, peerConnection.iceConnectionState);
-        if (peerConnection.iceConnectionState === 'disconnected' ||
-          peerConnection.iceConnectionState === 'failed') {
+        const state = peerConnection.iceConnectionState;
+        console.log(`ICE connection state for ${remotePeerId}:`, state);
+
+        if (state === 'failed') {
+          console.warn(`ICE connection failed for ${remotePeerId}. Cleaning up.`);
           handlePeerLeft(remotePeerId);
+        } else if (state === 'disconnected') {
+          console.log(`ICE connection disconnected for ${remotePeerId}. The browser may try to reconnect.`);
+        } else if (state === 'connected' || state === 'completed') {
+          console.log(`ICE connection established with ${remotePeerId}`);
         }
       };
     }
@@ -176,7 +189,16 @@ export function useWebRTC({ roomId, peerId, displayName, onRemoteASLToggle, onTe
     }
   }, [onRemoteASLToggle]);
 
-  const { sendOffer, sendAnswer, sendIceCandidate, notifyASLToggle, sendTextMessage, leaveRoom } = useSignaling({
+  const handleMediaToggle = useCallback((remotePeerId: string, type: 'audio' | 'video', enabled: boolean) => {
+    const peerData = peersRef.current.get(remotePeerId);
+    if (peerData) {
+      if (type === 'audio') peerData.audioEnabled = enabled;
+      if (type === 'video') peerData.videoEnabled = enabled;
+      setPeers(new Map(peersRef.current));
+    }
+  }, []);
+
+  const { sendOffer, sendAnswer, sendIceCandidate, notifyASLToggle, notifyMediaToggle, sendTextMessage, leaveRoom } = useSignaling({
     roomId,
     peerId,
     displayName,
@@ -186,6 +208,7 @@ export function useWebRTC({ roomId, peerId, displayName, onRemoteASLToggle, onTe
     onPeerJoined: handlePeerJoined,
     onPeerLeft: handlePeerLeft,
     onASLToggle: handleASLToggle,
+    onMediaToggle: handleMediaToggle,
     onTextMessage,
   });
 
@@ -218,16 +241,18 @@ export function useWebRTC({ roomId, peerId, displayName, onRemoteASLToggle, onTe
       const newState = !audioEnabled;
       toggleAudioTrack(localStreamRef.current, newState);
       setAudioEnabled(newState);
+      notifyMediaToggle('audio', newState);
     }
-  }, [audioEnabled]);
+  }, [audioEnabled, notifyMediaToggle]);
 
   const toggleVideo = useCallback(() => {
     if (localStreamRef.current) {
       const newState = !videoEnabled;
       toggleVideoTrack(localStreamRef.current, newState);
       setVideoEnabled(newState);
+      notifyMediaToggle('video', newState);
     }
-  }, [videoEnabled]);
+  }, [videoEnabled, notifyMediaToggle]);
 
   return {
     localStream,
