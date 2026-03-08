@@ -41,7 +41,6 @@ io.on('connection', (socket) => {
     }));
 
     console.log(`Existing peers in room ${roomId}:`, existingPeers);
-    socket.emit('existing-peers', { peers: existingPeers });
 
     // Notify existing peers about new peer
     roomPeers.forEach((peerInfo, existingPeerId) => {
@@ -114,16 +113,6 @@ io.on('connection', (socket) => {
 
     socket.to(roomId).emit('asl-toggle', {
       peerId,
-      enabled,
-    });
-  });
-
-  socket.on('media-toggle', ({ roomId, peerId, type, enabled }) => {
-    console.log(`Media toggle from ${peerId}: ${type} ${enabled}`);
-
-    socket.to(roomId).emit('media-toggle', {
-      peerId,
-      type,
       enabled,
     });
   });

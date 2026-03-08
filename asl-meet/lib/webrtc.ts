@@ -1,18 +1,12 @@
 export const ICE_SERVERS: RTCConfiguration = {
   iceServers: [
     {
-      urls: [
-        'stun:stun.l.google.com:19302',
-        'stun:stun1.l.google.com:19302',
-        'stun:stun2.l.google.com:19302',
-        'stun:stun3.l.google.com:19302',
-        'stun:stun4.l.google.com:19302',
-      ],
+      urls: 'stun:stun.l.google.com:19302',
     },
-    // For production, you MUST use a TURN server for reliable cross-network calls.
-    // Example: { urls: 'turn:your-turn-server.com', username: 'user', credential: 'pwd' }
+    {
+      urls: 'stun:stun1.l.google.com:19302',
+    },
   ],
-  iceCandidatePoolSize: 10,
 };
 
 export function createPeerConnection(): RTCPeerConnection {

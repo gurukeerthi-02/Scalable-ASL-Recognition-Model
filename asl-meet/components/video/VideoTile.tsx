@@ -38,23 +38,11 @@ export function VideoTile({
     if (videoRef.current && stream) {
       videoRef.current.srcObject = stream;
 
-      const handleTrackAdded = () => {
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
-      };
-
-      stream.addEventListener('addtrack', handleTrackAdded);
-
       if (onVideoElementReady) {
         onVideoElementReady(videoRef.current);
       }
-
-      return () => {
-        stream.removeEventListener('addtrack', handleTrackAdded);
-      };
     }
-  }, [stream, stream?.getTracks().length, onVideoElementReady]);
+  }, [stream, onVideoElementReady]);
 
   return (
     <div

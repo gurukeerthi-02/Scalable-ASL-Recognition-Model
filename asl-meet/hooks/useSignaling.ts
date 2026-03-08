@@ -12,10 +12,8 @@ interface UseSignalingProps {
   onAnswer: (peerId: string, answer: RTCSessionDescriptionInit) => void;
   onIceCandidate: (peerId: string, candidate: RTCIceCandidateInit) => void;
   onPeerJoined: (peerId: string, displayName: string) => void;
-  onExistingPeers?: (peers: Array<{ peerId: string, displayName: string }>) => void;
   onPeerLeft: (peerId: string) => void;
   onASLToggle: (peerId: string, enabled: boolean) => void;
-  onMediaToggle?: (peerId: string, type: 'audio' | 'video', enabled: boolean) => void;
   onTextMessage?: (peerId: string, text: string, displayName?: string) => void;
 }
 
@@ -27,10 +25,8 @@ export function useSignaling({
   onAnswer,
   onIceCandidate,
   onPeerJoined,
-  onExistingPeers,
   onPeerLeft,
   onASLToggle,
-  onMediaToggle,
   onTextMessage,
 }: UseSignalingProps) {
   const socketRef = useRef<Socket | null>(null);
@@ -42,8 +38,7 @@ export function useSignaling({
     const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
 
     socketRef.current = io(SOCKET_URL, {
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
+      transports: ['websocket'],
     });
 
     const socket = socketRef.current;
@@ -51,11 +46,6 @@ export function useSignaling({
     socket.on('connect', () => {
       console.log('Socket connected:', socket.id);
       socket.emit('join-room', { roomId, peerId, displayName });
-    });
-
-    socket.on('existing-peers', ({ peers }) => {
-      console.log('Existing peers received:', peers.length);
-      onExistingPeers?.(peers);
     });
 
     socket.on('peer-joined', ({ peerId: remotePeerId, displayName: remoteDisplayName }) => {
@@ -88,11 +78,6 @@ export function useSignaling({
       onASLToggle(remotePeerId, enabled);
     });
 
-    socket.on('media-toggle', ({ peerId: remotePeerId, type, enabled }) => {
-      console.log('Media toggle from:', remotePeerId, type, enabled);
-      onMediaToggle?.(remotePeerId, type, enabled);
-    });
-
     socket.on('text-message', ({ peerId: remotePeerId, text, displayName: remoteDisplayName }) => {
       console.log('Text message from:', remotePeerId, text);
       onTextMessage?.(remotePeerId, text, remoteDisplayName);
@@ -105,7 +90,7 @@ export function useSignaling({
     return () => {
       socket.disconnect();
     };
-  }, [roomId, peerId, displayName, onOffer, onAnswer, onIceCandidate, onPeerJoined, onExistingPeers, onPeerLeft, onASLToggle, onMediaToggle, onTextMessage]);
+  }, [roomId, peerId, displayName, onOffer, onAnswer, onIceCandidate, onPeerJoined, onPeerLeft, onASLToggle, onTextMessage]);
 
   const sendOffer = useCallback(
     (targetPeerId: string, offer: RTCSessionDescriptionInit) => {
@@ -154,18 +139,6 @@ export function useSignaling({
     [roomId, peerId]
   );
 
-  const notifyMediaToggle = useCallback(
-    (type: 'audio' | 'video', enabled: boolean) => {
-      socketRef.current?.emit('media-toggle', {
-        roomId,
-        peerId,
-        type,
-        enabled,
-      });
-    },
-    [roomId, peerId]
-  );
-
   const sendTextMessage = useCallback(
     (text: string) => {
       socketRef.current?.emit('text-message', {
@@ -188,7 +161,6 @@ export function useSignaling({
     sendAnswer,
     sendIceCandidate,
     notifyASLToggle,
-    notifyMediaToggle,
     sendTextMessage,
     leaveRoom,
   };
