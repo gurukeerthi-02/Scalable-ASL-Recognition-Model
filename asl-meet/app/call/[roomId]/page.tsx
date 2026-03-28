@@ -196,6 +196,19 @@ export default function CallPage() {
     // Remove lastRecognizedLetterRef clearing to prevent re-adding current sign
   }, []);
 
+  const handleBackspace = useCallback(() => {
+    setSentenceBuffer(prev => prev.slice(0, -1));
+  }, []);
+  const handleSelectSuggestion = useCallback((word: string) => {
+    setSentenceBuffer(prev => {
+      const words = prev.split(' ');
+      words.pop(); // remove partial word
+      words.push(word);
+      return words.join(' ') + ' '; // add completed word with a trailing space!
+    });
+  }, []);
+
+
   const handleToggleVoiceOut = useCallback(() => {
     const newState = !voiceOutEnabled;
     setVoiceOutEnabled(newState);
@@ -452,6 +465,8 @@ export default function CallPage() {
                     onSendSentence={handleSendSentence}
                     onClearSentence={handleClearSentence}
                     onAddSpace={handleAddSpace}
+                    onBackspace={handleBackspace}
+                    onSelectSuggestion={handleSelectSuggestion}
                     receivedMessages={receivedMessages}
                   />
                 </div>
@@ -479,6 +494,8 @@ export default function CallPage() {
                       onSendSentence={handleSendSentence}
                       onClearSentence={handleClearSentence}
                       onAddSpace={handleAddSpace}
+                    onBackspace={handleBackspace}
+                    onSelectSuggestion={handleSelectSuggestion}
                       receivedMessages={receivedMessages}
                     />
                   </div>

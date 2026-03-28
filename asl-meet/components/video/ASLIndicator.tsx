@@ -1,8 +1,10 @@
 'use client';
 
+import { useMemo } from 'react';
 import { Card } from '@/components/ui/card';
+import { COMMON_WORDS } from '@/lib/dictionary';
 import { Button } from '@/components/ui/button';
-import { Hand, Send, Trash2, Space, Zap, MessageSquare, Activity, User, MessageCircle, Sparkles } from 'lucide-react';
+import { Hand, Send, Trash2, Space, Delete, Zap, MessageSquare, Activity, User, MessageCircle, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -17,6 +19,8 @@ interface ASLIndicatorProps {
   onSendSentence?: () => void;
   onClearSentence?: () => void;
   onAddSpace?: () => void;
+  onBackspace?: () => void;
+  onSelectSuggestion?: (word: string) => void;
   receivedMessages?: Array<{ peerId: string, text: string, timestamp: number, displayName?: string }>;
 }
 
@@ -28,8 +32,22 @@ export function ASLIndicator({
   onSendSentence,
   onClearSentence,
   onAddSpace,
+  onBackspace,
+  onSelectSuggestion,
   receivedMessages = []
 }: ASLIndicatorProps) {
+
+  const suggestions = useMemo(() => {
+    const words = sentenceBuffer.split(' ');
+    const lastWord = words[words.length - 1].toUpperCase();
+    if (!lastWord || lastWord.length < 2) return [];
+    
+    const matches = COMMON_WORDS.filter(w => 
+      w.toUpperCase().startsWith(lastWord) && w.toUpperCase() !== lastWord
+    );
+    return matches.slice(0, 3).map(w => w.toUpperCase());
+  }, [sentenceBuffer]);
+
   return (
     <div className="flex flex-col h-full bg-white overflow-hidden">
       <Tabs defaultValue="interpreter" className="flex-1 flex flex-col overflow-hidden">
@@ -146,7 +164,20 @@ export function ASLIndicator({
 
             {/* Translation Buffer */}
             <div className="space-y-3">
-              <h4 className="text-[10px] font-bold uppercase tracking-wider text-palette-dark/60 ml-1">Current Sentence</h4>
+              <div className="flex items-center justify-between ml-1 mb-1">
+                <h4 className="text-[10px] font-bold uppercase tracking-wider text-palette-dark/60">Current Sentence</h4>
+                <div className="flex flex-wrap gap-2">
+                  {suggestions.map((sug) => (
+                    <button
+                      key={sug}
+                      onClick={() => onSelectSuggestion?.(sug)}
+                      className="px-3 py-1 bg-palette-light/20 hover:bg-palette-medium hover:text-white text-palette-dark text-xs font-bold rounded-full shadow-sm border border-palette-medium/30 transition-all active:scale-95 flex items-center justify-center whitespace-nowrap"
+                    >
+                      {sug}
+                    </button>
+                  ))}
+                </div>
+              </div>
               <div className="relative group">
                 <div className="min-h-[120px] p-4 bg-gray-50 border-2 border-gray-200 rounded-2xl text-lg font-medium text-palette-dark leading-relaxed group-hover:border-gray-300 transition-colors shadow-inner">
                   {sentenceBuffer || (
@@ -154,6 +185,16 @@ export function ASLIndicator({
                   )}
                 </div>
                 <div className="absolute bottom-3 right-3 flex gap-1.5">
+                  <Button
+                    size="icon"
+                    variant="secondary"
+                    onClick={onBackspace}
+                    disabled={!sentenceBuffer.length}
+                    className="h-9 w-9 bg-white text-palette-dark border border-gray-200 hover:bg-orange-500 hover:border-orange-500 hover:text-white rounded-xl shadow-sm transition-all disabled:opacity-30"
+                    title="Backspace"
+                  >
+                    <Delete className="w-4 h-4" />
+                  </Button>
                   <Button
                     size="icon"
                     variant="secondary"
