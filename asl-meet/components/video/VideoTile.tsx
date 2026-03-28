@@ -46,7 +46,7 @@ export function VideoTile({
 
   return (
     <div
-      className="relative overflow-hidden bg-black rounded-2xl w-full h-full group border-2 border-gray-800 shadow-2xl transition-all duration-300 hover:border-yellow-400/50 hover:shadow-yellow-400/20"
+      className="relative overflow-hidden bg-slate-900 rounded-2xl w-full h-full group border-2 border-gray-800 shadow-2xl transition-all duration-300 hover:border-palette-light/60 hover:shadow-palette-light/40"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -62,9 +62,9 @@ export function VideoTile({
       {(!stream || !videoEnabled) && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-900">
           <div className="relative">
-            <div className="absolute inset-0 bg-yellow-400/10 blur-3xl rounded-full" />
+            <div className="absolute inset-0 bg-palette-light/30 blur-3xl rounded-full" />
             <div className="relative w-24 h-24 md:w-28 md:h-28 rounded-full bg-gradient-to-br from-gray-800 to-black border-2 border-gray-700 flex items-center justify-center mb-4 shadow-xl">
-              <User className="w-10 h-10 md:w-12 md:h-12 text-gray-600 group-hover:text-yellow-400 transition-colors duration-300" />
+              <User className="w-10 h-10 md:w-12 md:h-12 text-gray-600 group-hover:text-palette-medium transition-colors duration-300" />
               {!videoEnabled && (
                 <div className="absolute -bottom-1 -right-1 bg-red-500 rounded-full p-2 border-4 border-black shadow-lg">
                   <VideoOff className="w-3 h-3 md:w-4 md:h-4 text-white" />
@@ -90,7 +90,7 @@ export function VideoTile({
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2 flex-wrap">
             {/* Name Badge */}
-            <div className="bg-black/70 backdrop-blur-md px-3 md:px-4 py-2 rounded-xl flex items-center gap-2 md:gap-3 border border-white/10 shadow-xl pointer-events-auto transition-all hover:bg-black/80">
+            <div className="bg-palette-dark/70 backdrop-blur-md px-3 md:px-4 py-2 rounded-xl flex items-center gap-2 md:gap-3 border border-white/10 shadow-xl pointer-events-auto transition-all hover:bg-black/80">
               <div className={`w-2 h-2 rounded-full ${audioEnabled ? 'bg-green-500 shadow-lg shadow-green-500/50' : 'bg-red-500'}`} />
               <span className="text-xs md:text-sm font-bold text-white">
                 {displayName}
@@ -102,9 +102,9 @@ export function VideoTile({
 
             {/* ASL Enabled Badge */}
             {isAslEnabled && (
-              <div className="bg-yellow-400 px-3 py-2 rounded-xl flex items-center gap-2 shadow-lg shadow-yellow-400/30 border border-yellow-500 animate-in slide-in-from-left duration-300 pointer-events-auto">
-                <Hand className="w-3 md:w-3.5 h-3 md:h-3.5 text-black fill-current" />
-                <span className="text-[10px] md:text-xs font-bold text-black tracking-wide uppercase">ASL Active</span>
+              <div className="bg-palette-medium px-3 py-2 rounded-xl flex items-center gap-2 shadow-lg shadow-palette-light/50 border border-palette-medium animate-in slide-in-from-left duration-300 pointer-events-auto">
+                <Hand className="w-3 md:w-3.5 h-3 md:h-3.5 text-palette-dark fill-current" />
+                <span className="text-[10px] md:text-xs font-bold text-palette-dark tracking-wide uppercase">ASL Active</span>
               </div>
             )}
           </div>
@@ -112,8 +112,8 @@ export function VideoTile({
 
         {/* Hand Raised Indicator */}
         {handRaised && (
-          <div className="bg-yellow-400 p-2.5 md:p-3 rounded-xl shadow-xl shadow-yellow-400/50 animate-bounce pointer-events-auto border-2 border-yellow-500">
-            <Hand className="w-5 h-5 md:w-6 md:h-6 text-black fill-current" />
+          <div className="bg-palette-medium p-2.5 md:p-3 rounded-xl shadow-xl shadow-palette-light/60 animate-bounce pointer-events-auto border-2 border-palette-medium">
+            <Hand className="w-5 h-5 md:w-6 md:h-6 text-palette-dark fill-current" />
           </div>
         )}
       </div>
@@ -138,8 +138,8 @@ export function VideoTile({
 
       {/* Primary Indicator */}
       {isPrimary && (
-        <div className="absolute top-4 left-4 bg-yellow-400 px-3 py-1.5 rounded-lg shadow-lg">
-          <span className="text-xs font-bold text-black uppercase tracking-wide">Primary</span>
+        <div className="absolute top-4 left-4 bg-palette-medium px-3 py-1.5 rounded-lg shadow-lg">
+          <span className="text-xs font-bold text-palette-dark uppercase tracking-wide">Primary</span>
         </div>
       )}
     </div>
@@ -160,7 +160,7 @@ function ControlButton({
       variant="ghost"
       size="icon"
       onClick={onClick}
-      className="bg-black/70 hover:bg-yellow-400 text-white hover:text-black rounded-xl w-10 h-10 md:w-11 md:h-11 backdrop-blur-md border border-white/10 hover:border-yellow-400 transition-all hover:scale-110 active:scale-95 shadow-xl pointer-events-auto"
+      className="bg-palette-dark/70 hover:bg-palette-medium text-white hover:text-palette-dark rounded-xl w-10 h-10 md:w-11 md:h-11 backdrop-blur-md border border-white/10 hover:border-palette-medium transition-all hover:scale-110 active:scale-95 shadow-xl pointer-events-auto"
       title={label}
     >
       {icon}

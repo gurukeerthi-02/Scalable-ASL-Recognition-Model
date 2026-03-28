@@ -325,17 +325,17 @@ export default function CallPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-yellow-400 via-yellow-300 to-yellow-400 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-palette-offwhite flex items-center justify-center p-4">
         <Card className="p-8 bg-white border-0 shadow-2xl max-w-md animate-fade-in">
           <div className="flex flex-col items-center text-center">
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-6">
               <AlertCircle className="w-8 h-8 text-red-600" />
             </div>
-            <h2 className="text-2xl font-bold mb-2 text-black">Session Error</h2>
-            <p className="text-black/70 mb-8 leading-relaxed">{error}</p>
+            <h2 className="text-2xl font-bold mb-2 text-palette-dark">Session Error</h2>
+            <p className="text-palette-dark/70 mb-8 leading-relaxed">{error}</p>
             <Button
               onClick={() => router.push('/')}
-              className="w-full h-12 bg-black text-yellow-400 hover:bg-black/90"
+              className="w-full h-12 bg-palette-dark text-palette-offwhite hover:bg-palette-dark/90"
             >
               Back to Home
             </Button>
@@ -347,23 +347,23 @@ export default function CallPage() {
 
   return (
     <TooltipProvider>
-      <div className="flex flex-col h-[100dvh] bg-gradient-to-br from-yellow-400 via-yellow-300 to-yellow-400 overflow-hidden">
+      <div className="flex flex-col h-[100dvh] bg-palette-offwhite overflow-hidden">
 
         {/* Professional Header */}
-        <header className="h-14 md:h-18 border-b border-black/10 flex items-center justify-between px-3 md:px-6 bg-white/90 backdrop-blur-xl z-50 flex-shrink-0 shadow-sm">
+        <header className="h-14 md:h-18 border-b border-palette-dark/10 flex items-center justify-between px-3 md:px-6 bg-white/90 backdrop-blur-xl z-50 flex-shrink-0 shadow-sm">
           <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
             <div className="flex items-center gap-1.5 md:gap-2">
-              <div className="p-1.5 bg-black rounded-lg md:rounded-xl flex-shrink-0">
-                <Hand className="w-4 h-4 md:w-5 md:h-5 text-yellow-400" />
+              <div className="bg-gradient-to-br from-palette-medium to-palette-light p-1.5 rounded-lg md:rounded-xl flex-shrink-0 shadow-lg shadow-palette-medium/30">
+                <Hand className="w-4 h-4 md:w-5 md:h-5 text-palette-offwhite" />
               </div>
-              <span className="hidden sm:block text-base md:text-lg font-bold text-black">ASL Meet</span>
+              <span className="hidden sm:block text-base md:text-lg font-extrabold tracking-wide text-palette-dark">Voiceout</span>
             </div>
 
-            <div className="h-8 w-px bg-black/10 mx-2 hidden md:block" />
+            <div className="h-8 w-px bg-palette-dark/10 mx-2 hidden md:block" />
 
             <div className="min-w-0 flex flex-col">
               <div className="flex items-center gap-2">
-                <h1 className="text-xs md:text-base font-bold truncate text-black max-w-[100px] sm:max-w-none">
+                <h1 className="text-xs md:text-base font-bold truncate text-palette-dark max-w-[100px] sm:max-w-none">
                   {roomName || 'Active Session'}
                 </h1>
                 <Badge className="bg-green-500 text-white hover:bg-green-600 px-1.5 md:px-2 h-4 md:h-5 text-[9px] md:text-[10px] font-bold">
@@ -371,35 +371,29 @@ export default function CallPage() {
                 </Badge>
               </div>
               <div className="flex items-center gap-2 mt-0.5">
-                <span className="text-[10px] md:text-xs text-black/50 font-mono">
+                <span className="text-[10px] md:text-xs text-palette-dark/50 font-mono">
                   ID: {roomId}
                 </span>
                 <button
                   onClick={copyRoomId}
-                  className="flex items-center gap-1 hover:text-black transition-colors"
+                  className="flex items-center gap-1 hover:text-palette-dark transition-colors"
                 >
-                  <span className="text-[10px] text-black/50 hover:text-black underline">
+                  <span className="text-[10px] text-palette-dark/50 hover:text-palette-dark underline">
                     {isCopied ? 'Copied!' : 'Copy'}
                   </span>
-                  {isCopied ? <Check className="w-3 h-3 text-green-600" /> : <Copy className="w-3 h-3 text-black/50" />}
+                  {isCopied ? <Check className="w-3 h-3 text-green-600" /> : <Copy className="w-3 h-3 text-palette-dark/50" />}
                 </button>
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
-            <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-black/5 rounded-full">
-              <Users className="w-4 h-4 text-black" />
-              <span className="text-xs font-semibold text-black">{peers.size + 1}</span>
+            <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-palette-dark/5 rounded-full">
+              <Users className="w-4 h-4 text-palette-dark" />
+              <span className="text-xs font-semibold text-palette-dark">{peers.size + 1}</span>
             </div>
 
-            <Button
-              onClick={handleLeave}
-              className="rounded-full px-4 md:px-6 h-9 md:h-10 font-bold bg-red-600 hover:bg-red-700 text-white shadow-lg"
-            >
-              <span className="hidden sm:inline">Leave</span>
-              <span className="sm:hidden">End</span>
-            </Button>
+            
           </div>
         </header>
 
@@ -421,8 +415,8 @@ export default function CallPage() {
             {/* Video Off State */}
             {!videoEnabled && (
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 to-black z-20">
-                <div className="w-20 h-20 bg-yellow-400/20 rounded-full flex items-center justify-center mb-4 border-2 border-yellow-400/30">
-                  <UserIcon className="w-10 h-10 text-yellow-400" />
+                <div className="w-20 h-20 bg-palette-light/40 rounded-full flex items-center justify-center mb-4 border-2 border-palette-light/50">
+                  <UserIcon className="w-10 h-10 text-palette-medium" />
                 </div>
                 <p className="text-white/70 font-medium">Camera is Off</p>
               </div>
@@ -441,13 +435,13 @@ export default function CallPage() {
           {showASLPanel && (
             <>
               {/* Desktop Sidebar */}
-              <div className={`hidden lg:flex lg:w-[360px] xl:w-[400px] flex-shrink-0 bg-white border-l border-black/10 flex-col shadow-2xl transition-all duration-300`}>
-                <div className="p-4 border-b border-black/10 flex items-center justify-between bg-yellow-400/10">
+              <div className={`hidden lg:flex lg:w-[360px] xl:w-[400px] flex-shrink-0 bg-white border-l border-palette-dark/10 flex-col shadow-2xl transition-all duration-300`}>
+                <div className="p-4 border-b border-palette-dark/10 flex items-center justify-between bg-palette-light/30">
                   <div className="flex items-center gap-2">
                     <div className={`w-2 h-2 rounded-full ${voiceOutEnabled ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
-                    <span className="text-sm font-bold text-black">ASL Interpreter & Chat</span>
+                    <span className="text-sm font-bold text-palette-dark">ASL Interpreter & Chat</span>
                   </div>
-                  {voiceOutEnabled && <Badge className="text-[10px] bg-black text-yellow-400">Recognition Active</Badge>}
+                  {voiceOutEnabled && <Badge className="text-[10px] bg-palette-dark text-palette-offwhite">Recognition Active</Badge>}
                 </div>
                 <div className="flex-1 overflow-hidden">
                   <ASLIndicator
@@ -465,13 +459,13 @@ export default function CallPage() {
 
               {/* Mobile Bottom Sheet */}
               <div className="lg:hidden absolute bottom-24 left-2 right-2 z-30 animate-in slide-in-from-bottom duration-300">
-                <div className="bg-white rounded-2xl shadow-2xl border border-black/10 flex flex-col overflow-hidden max-h-[50vh]">
-                  <div className="p-3 border-b border-black/10 flex items-center justify-between bg-yellow-400/5">
+                <div className="bg-white rounded-2xl shadow-2xl border border-palette-dark/10 flex flex-col overflow-hidden max-h-[50vh]">
+                  <div className="p-3 border-b border-palette-dark/10 flex items-center justify-between bg-palette-medium/5">
                     <div className="flex items-center gap-2">
                       <div className={`w-2 h-2 rounded-full ${voiceOutEnabled ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
-                      <span className="text-xs font-bold text-black uppercase tracking-wider">Interpreter & Chat</span>
+                      <span className="text-xs font-bold text-palette-dark uppercase tracking-wider">Interpreter & Chat</span>
                     </div>
-                    {voiceOutEnabled && <Badge className="text-[9px] bg-black text-yellow-400 border-0 h-4">LIVE</Badge>}
+                    {voiceOutEnabled && <Badge className="text-[9px] bg-palette-dark text-palette-offwhite border-0 h-4">LIVE</Badge>}
                     <Button variant="ghost" size="icon" onClick={() => setShowASLPanel(false)} className="h-6 w-6 rounded-full">
                       <ChevronRight className="w-4 h-4 rotate-90" />
                     </Button>
@@ -495,7 +489,7 @@ export default function CallPage() {
         </main>
 
         {/* Control Bar */}
-        <footer className="h-16 md:h-24 bg-white/95 backdrop-blur-xl border-t border-black/10 flex items-center justify-center px-4 z-40 shadow-lg">
+        <footer className="h-16 md:h-24 bg-white/95 backdrop-blur-xl border-t border-palette-dark/10 flex items-center justify-center px-4 z-40 shadow-lg">
           <div className="max-w-4xl w-full">
             <CallControls
               audioEnabled={audioEnabled}

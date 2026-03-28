@@ -34,22 +34,22 @@ export function ASLIndicator({
     <div className="flex flex-col h-full bg-white overflow-hidden">
       <Tabs defaultValue="interpreter" className="flex-1 flex flex-col overflow-hidden">
         <div className="px-4 pt-2 bg-gray-50/50">
-          <TabsList className="grid w-full grid-cols-2 bg-black/5 p-1 rounded-xl">
+          <TabsList className="grid w-full grid-cols-2 bg-palette-dark/5 p-1 rounded-xl">
             <TabsTrigger
               value="interpreter"
-              className="rounded-lg data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-sm font-bold text-xs flex items-center gap-2"
+              className="rounded-lg data-[state=active]:bg-white data-[state=active]:text-palette-dark data-[state=active]:shadow-sm font-bold text-xs flex items-center gap-2"
             >
               <Activity className="w-3.5 h-3.5" />
               Interpreter
             </TabsTrigger>
             <TabsTrigger
               value="chat"
-              className="rounded-lg data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-sm font-bold text-xs flex items-center gap-2"
+              className="rounded-lg data-[state=active]:bg-white data-[state=active]:text-palette-dark data-[state=active]:shadow-sm font-bold text-xs flex items-center gap-2"
             >
               <MessageCircle className="w-3.5 h-3.5" />
               Chat
               {receivedMessages.length > 0 && (
-                <Badge variant="secondary" className="ml-1 h-4 min-w-4 p-0 flex items-center justify-center text-[8px] bg-yellow-400 text-black border-0">
+                <Badge variant="secondary" className="ml-1 h-4 min-w-4 p-0 px-1 flex items-center justify-center text-[9px] bg-red-500 text-white border-0 font-bold">
                   {receivedMessages.length}
                 </Badge>
               )}
@@ -70,11 +70,11 @@ export function ASLIndicator({
 
           <div className={!isActive ? 'opacity-40 pointer-events-none grayscale' : ''}>
             {/* Real-time Recognition Card */}
-            <Card className="p-4 bg-yellow-400/10 border-2 border-yellow-400/30 shadow-lg">
+            <Card className="p-4 bg-palette-light/30 border-2 border-palette-light/50 shadow-lg">
               <div className="flex items-start gap-3">
                 <div className="relative flex-shrink-0">
-                  <div className="w-12 h-12 bg-yellow-400 rounded-xl flex items-center justify-center shadow-md">
-                    <Activity className="w-6 h-6 text-black" />
+                  <div className="w-12 h-12 bg-palette-medium rounded-xl flex items-center justify-center shadow-md">
+                    <Activity className="w-6 h-6 text-palette-dark" />
                   </div>
                   <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white shadow-sm animate-pulse" />
                 </div>
@@ -82,7 +82,7 @@ export function ASLIndicator({
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-xs font-bold uppercase tracking-wide text-black">Live Recognition</h3>
+                      <h3 className="text-xs font-bold uppercase tracking-wide text-palette-dark">Live Recognition</h3>
                       {lastRecognition && (
                         <Badge className={`text-[9px] font-black border-0 px-1.5 h-4 ${lastRecognition.mode === 1 ? 'bg-blue-600 text-white' :
                           lastRecognition.mode === 2 ? 'bg-purple-600 text-white' :
@@ -95,22 +95,22 @@ export function ASLIndicator({
                         </Badge>
                       )}
                     </div>
-                    <span className="text-[10px] font-mono text-black/60">{frameCount} frames</span>
+                    <span className="text-[10px] font-mono text-palette-dark/60">{frameCount} frames</span>
                   </div>
 
                   {lastRecognition && lastRecognition.text ? (
                     <div className="space-y-3">
                       <div className="flex items-baseline gap-2 flex-wrap">
-                        <span className="text-3xl md:text-4xl font-black text-black tracking-tight">
+                        <span className="text-3xl md:text-4xl font-black text-palette-dark tracking-tight">
                           {lastRecognition.text}
                         </span>
-                        <Badge className="bg-black text-yellow-400 border-0 text-xs font-bold">
+                        <Badge className="bg-palette-dark text-palette-offwhite border-0 text-xs font-bold">
                           {(lastRecognition.confidence * 100).toFixed(0)}%
                         </Badge>
                       </div>
-                      <div className="h-2 bg-black/10 rounded-full overflow-hidden">
+                      <div className="h-2 bg-palette-dark/10 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-yellow-400 transition-all duration-300 rounded-full"
+                          className="h-full bg-palette-medium transition-all duration-300 rounded-full"
                           style={{ width: `${lastRecognition.confidence * 100}%` }}
                         />
                       </div>
@@ -119,25 +119,25 @@ export function ASLIndicator({
                     <div className="py-2 space-y-3">
                       <div className="grid grid-cols-2 gap-2">
                         <div className="bg-white p-2 rounded-lg border border-gray-200">
-                          <p className="text-[8px] uppercase text-black/50 font-bold mb-0.5">Motion</p>
-                          <p className="text-xs font-mono text-black">{(lastRecognition?.motion || 0).toFixed(4)}</p>
+                          <p className="text-[8px] uppercase text-palette-dark/50 font-bold mb-0.5">Motion</p>
+                          <p className="text-xs font-mono text-palette-dark">{(lastRecognition?.motion || 0).toFixed(4)}</p>
                         </div>
                         <div className="bg-white p-2 rounded-lg border border-gray-200">
-                          <p className="text-[8px] uppercase text-black/50 font-bold mb-0.5">Mode</p>
-                          <p className="text-xs font-mono text-black">
+                          <p className="text-[8px] uppercase text-palette-dark/50 font-bold mb-0.5">Mode</p>
+                          <p className="text-xs font-mono text-palette-dark">
                             {lastRecognition?.mode === 0 ? 'IDLE' :
                               lastRecognition?.mode === 1 ? 'STATIC' :
                                 lastRecognition?.mode === 2 ? 'DYNAMIC' : 'HOLD'}
                           </p>
                         </div>
                       </div>
-                      <div className="h-1.5 w-full bg-black/10 overflow-hidden rounded-full">
+                      <div className="h-1.5 w-full bg-palette-dark/10 overflow-hidden rounded-full">
                         <div
-                          className="h-full bg-yellow-400 transition-all duration-300 rounded-full"
+                          className="h-full bg-palette-medium transition-all duration-300 rounded-full"
                           style={{ width: `${((lastRecognition?.buffer_size || 0) / 30) * 100}%` }}
                         />
                       </div>
-                      <p className="text-xs text-black/60 font-medium italic animate-pulse">Analyzing hand gestures...</p>
+                      <p className="text-xs text-palette-dark/60 font-medium italic animate-pulse">Analyzing hand gestures...</p>
                     </div>
                   )}
                 </div>
@@ -146,9 +146,9 @@ export function ASLIndicator({
 
             {/* Translation Buffer */}
             <div className="space-y-3">
-              <h4 className="text-[10px] font-bold uppercase tracking-wider text-black/60 ml-1">Current Sentence</h4>
+              <h4 className="text-[10px] font-bold uppercase tracking-wider text-palette-dark/60 ml-1">Current Sentence</h4>
               <div className="relative group">
-                <div className="min-h-[120px] p-4 bg-gray-50 border-2 border-gray-200 rounded-2xl text-lg font-medium text-black leading-relaxed group-hover:border-gray-300 transition-colors shadow-inner">
+                <div className="min-h-[120px] p-4 bg-gray-50 border-2 border-gray-200 rounded-2xl text-lg font-medium text-palette-dark leading-relaxed group-hover:border-gray-300 transition-colors shadow-inner">
                   {sentenceBuffer || (
                     <span className="text-black/30 italic text-sm font-normal">Signs will appear here as you make them...</span>
                   )}
@@ -158,7 +158,7 @@ export function ASLIndicator({
                     size="icon"
                     variant="secondary"
                     onClick={onAddSpace}
-                    className="h-9 w-9 bg-white text-black border border-gray-200 hover:bg-black hover:text-white rounded-xl shadow-sm transition-all"
+                    className="h-9 w-9 bg-white text-palette-dark border border-gray-200 hover:bg-palette-dark hover:text-white rounded-xl shadow-sm transition-all"
                     title="Add Space"
                   >
                     <Space className="w-4 h-4" />
@@ -168,7 +168,7 @@ export function ASLIndicator({
                     variant="secondary"
                     onClick={onClearSentence}
                     disabled={!sentenceBuffer.trim()}
-                    className="h-9 w-9 bg-white text-black border border-gray-200 hover:bg-red-600 hover:text-white hover:border-red-600 rounded-xl shadow-sm transition-all disabled:opacity-30"
+                    className="h-9 w-9 bg-white text-palette-dark border border-gray-200 hover:bg-red-600 hover:text-white hover:border-red-600 rounded-xl shadow-sm transition-all disabled:opacity-30"
                     title="Clear Buffer"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -179,12 +179,12 @@ export function ASLIndicator({
 
             <div className="grid grid-cols-2 gap-3 pt-2">
               <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
-                <p className="text-[9px] font-bold text-black/40 uppercase tracking-widest mb-1">Words</p>
-                <p className="text-xl font-black text-black">{sentenceBuffer.split(' ').filter(w => w.length > 0).length}</p>
+                <p className="text-[9px] font-bold text-palette-dark/40 uppercase tracking-widest mb-1">Words</p>
+                <p className="text-xl font-black text-palette-dark">{sentenceBuffer.split(' ').filter(w => w.length > 0).length}</p>
               </div>
               <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
-                <p className="text-[9px] font-bold text-black/40 uppercase tracking-widest mb-1">Characters</p>
-                <p className="text-xl font-black text-black">{sentenceBuffer.length}</p>
+                <p className="text-[9px] font-bold text-palette-dark/40 uppercase tracking-widest mb-1">Characters</p>
+                <p className="text-xl font-black text-palette-dark">{sentenceBuffer.length}</p>
               </div>
             </div>
           </div>
@@ -196,8 +196,8 @@ export function ASLIndicator({
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                 <MessageSquare className="w-8 h-8 text-black/20" />
               </div>
-              <h3 className="text-sm font-bold text-black mb-1">No messages yet</h3>
-              <p className="text-xs text-black/40 max-w-[200px]">Sent and received messages will be displayed here.</p>
+              <h3 className="text-sm font-bold text-palette-dark mb-1">No messages yet</h3>
+              <p className="text-xs text-palette-dark/40 max-w-[200px]">Sent and received messages will be displayed here.</p>
             </div>
           ) : (
             <div className="space-y-3 pb-4">
@@ -207,7 +207,7 @@ export function ASLIndicator({
                   className={`flex flex-col ${msg.displayName === 'You' ? 'items-end' : 'items-start'} animate-in slide-in-from-bottom-2 duration-300`}
                 >
                   <div className="flex items-center gap-1.5 mb-1 px-1">
-                    <span className="text-[10px] font-bold text-black/60 uppercase tracking-wide">
+                    <span className="text-[10px] font-bold text-palette-dark/60 uppercase tracking-wide">
                       {msg.displayName || 'Participant'}
                     </span>
                     <span className="text-[9px] text-black/30">
@@ -215,8 +215,8 @@ export function ASLIndicator({
                     </span>
                   </div>
                   <div className={`max-w-[85%] p-3 rounded-2xl shadow-sm text-sm font-medium ${msg.displayName === 'You'
-                    ? 'bg-black text-yellow-400 rounded-tr-none'
-                    : 'bg-yellow-400/20 text-black border border-yellow-400/30 rounded-tl-none'
+                    ? 'bg-palette-dark text-palette-offwhite rounded-tr-none'
+                    : 'bg-palette-light/40 text-palette-dark border border-palette-light/50 rounded-tl-none'
                     }`}>
                     {msg.text}
                   </div>
@@ -232,7 +232,7 @@ export function ASLIndicator({
         <Button
           onClick={onSendSentence}
           disabled={!sentenceBuffer.trim()}
-          className="w-full h-12 rounded-xl bg-black hover:bg-black/90 text-yellow-400 font-bold shadow-lg transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed group"
+          className="w-full h-12 rounded-xl bg-palette-dark hover:bg-palette-dark/90 text-palette-offwhite font-bold shadow-lg transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed group"
         >
           <Send className="w-4 h-4 mr-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
           Send Integrated Message

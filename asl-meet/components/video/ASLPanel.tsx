@@ -32,13 +32,13 @@ export function ASLPanel({
     return (
       <Card className="bg-white border-0 shadow-lg p-8">
         <div className="text-center">
-          <div className="w-16 h-16 bg-yellow-400/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <Hand className="w-8 h-8 text-black/40" />
+          <div className="w-16 h-16 bg-palette-light/30 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <Hand className="w-8 h-8 text-palette-dark/40" />
           </div>
-          <h3 className="text-lg font-bold text-black mb-2">
+          <h3 className="text-lg font-bold text-palette-dark mb-2">
             ASL Interpreter
           </h3>
-          <p className="text-black/60 text-sm">
+          <p className="text-palette-dark/60 text-sm">
             Enable ASL mode to start real-time translation
           </p>
         </div>
@@ -50,14 +50,14 @@ export function ASLPanel({
     <div className="space-y-4 p-4">
       {/* ASL Camera Feed */}
       <Card className="bg-white border-0 shadow-lg overflow-hidden">
-        <div className="bg-yellow-400 px-4 py-3 border-b border-yellow-500">
-          <h3 className="text-black font-bold flex items-center gap-2 text-sm">
-            <Hand className="w-4 h-4 text-black" />
+        <div className="bg-palette-medium px-4 py-3 border-b border-palette-medium">
+          <h3 className="text-palette-dark font-bold flex items-center gap-2 text-sm">
+            <Hand className="w-4 h-4 text-palette-dark" />
             Live ASL Recognition
           </h3>
         </div>
         
-        <div className="aspect-video bg-black relative">
+        <div className="aspect-video bg-palette-dark relative">
           <video
             autoPlay
             playsInline
@@ -73,18 +73,18 @@ export function ASLPanel({
           {/* Live Recognition Overlay */}
           {lastRecognition && lastRecognition.text !== 'None' && (
             <div className="absolute top-4 left-4 right-4">
-              <div className="bg-yellow-400 backdrop-blur-sm rounded-xl px-4 py-3 shadow-xl border-2 border-yellow-500">
-                <div className="text-3xl font-bold text-black mb-1 text-center">
+              <div className="bg-palette-medium backdrop-blur-sm rounded-xl px-4 py-3 shadow-xl border-2 border-palette-medium">
+                <div className="text-3xl font-bold text-palette-dark mb-1 text-center">
                   {lastRecognition.text}
                 </div>
                 <div className="flex items-center justify-center gap-2">
                   <div className="h-1.5 flex-1 bg-black/20 rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-black rounded-full transition-all duration-300"
+                      className="h-full bg-palette-dark rounded-full transition-all duration-300"
                       style={{ width: `${lastRecognition.confidence * 100}%` }}
                     />
                   </div>
-                  <span className="text-xs font-bold text-black">
+                  <span className="text-xs font-bold text-palette-dark">
                     {(lastRecognition.confidence * 100).toFixed(0)}%
                   </span>
                 </div>
@@ -93,7 +93,7 @@ export function ASLPanel({
           )}
           
           {/* Status Indicator */}
-          <div className="absolute bottom-4 left-4 bg-black/70 backdrop-blur-md rounded-lg px-3 py-2 flex items-center gap-2 border border-white/10">
+          <div className="absolute bottom-4 left-4 bg-palette-dark/70 backdrop-blur-md rounded-lg px-3 py-2 flex items-center gap-2 border border-white/10">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
             <span className="text-xs font-semibold text-white">
               Active
@@ -101,7 +101,7 @@ export function ASLPanel({
           </div>
 
           {/* Frame Counter */}
-          <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-md rounded-lg px-3 py-2 border border-white/10">
+          <div className="absolute bottom-4 right-4 bg-palette-dark/70 backdrop-blur-md rounded-lg px-3 py-2 border border-white/10">
             <span className="text-xs font-semibold text-white">
               {frameCount} frames
             </span>
@@ -111,18 +111,18 @@ export function ASLPanel({
 
       {/* Sentence Builder */}
       <Card className="bg-white border-0 shadow-lg">
-        <div className="bg-yellow-400/20 px-4 py-3 border-b border-yellow-400/30">
-          <h4 className="text-black font-bold text-sm flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-black" />
+        <div className="bg-palette-light/40 px-4 py-3 border-b border-palette-light/50">
+          <h4 className="text-palette-dark font-bold text-sm flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-palette-dark" />
             Sentence Builder
           </h4>
         </div>
         
         <div className="p-4">
           {/* Buffer Display */}
-          <div className="min-h-[80px] p-4 bg-gray-50 border-2 border-gray-200 rounded-xl text-black mb-4 font-mono text-lg">
+          <div className="min-h-[80px] p-4 bg-gray-50 border-2 border-gray-200 rounded-xl text-palette-dark mb-4 font-mono text-lg">
             {sentenceBuffer || (
-              <span className="text-black/40 font-sans text-sm">
+              <span className="text-palette-dark/40 font-sans text-sm">
                 Your signed letters will appear here...
               </span>
             )}
@@ -133,7 +133,7 @@ export function ASLPanel({
             <Button
               onClick={onSendSentence}
               disabled={!sentenceBuffer.trim()}
-              className="flex-1 bg-black hover:bg-black/90 text-yellow-400 font-bold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed h-11"
+              className="flex-1 bg-palette-dark hover:bg-palette-dark/90 text-palette-offwhite font-bold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed h-11"
               size="sm"
             >
               <Send className="w-4 h-4 mr-2" />
@@ -142,7 +142,7 @@ export function ASLPanel({
             
             <Button
               onClick={onAddSpace}
-              className="border-2 border-black/20 text-black hover:bg-black/5 hover:border-black/30 h-11 w-11 p-0"
+              className="border-2 border-black/20 text-palette-dark hover:bg-palette-dark/5 hover:border-palette-dark/30 h-11 w-11 p-0"
               variant="outline"
               size="sm"
               title="Add Space"
@@ -163,9 +163,9 @@ export function ASLPanel({
           </div>
 
           {/* Quick Tips */}
-          <div className="mt-4 p-3 bg-yellow-400/10 rounded-lg border border-yellow-400/20">
-            <p className="text-xs text-black/70">
-              <strong className="text-black">Tip:</strong> Sign letters to build your message, then click "Send to Chat" to share with participants.
+          <div className="mt-4 p-3 bg-palette-light/30 rounded-lg border border-palette-light/40">
+            <p className="text-xs text-palette-dark/70">
+              <strong className="text-palette-dark">Tip:</strong> Sign letters to build your message, then click "Send to Chat" to share with participants.
             </p>
           </div>
         </div>
@@ -174,16 +174,16 @@ export function ASLPanel({
       {/* Quick Stats */}
       <div className="grid grid-cols-2 gap-3">
         <Card className="bg-white border-0 shadow-md p-4">
-          <div className="text-2xl font-bold text-black mb-1">
+          <div className="text-2xl font-bold text-palette-dark mb-1">
             {sentenceBuffer.length}
           </div>
-          <div className="text-xs text-black/60 font-semibold">Characters</div>
+          <div className="text-xs text-palette-dark/60 font-semibold">Characters</div>
         </Card>
         <Card className="bg-white border-0 shadow-md p-4">
-          <div className="text-2xl font-bold text-black mb-1">
+          <div className="text-2xl font-bold text-palette-dark mb-1">
             {sentenceBuffer.split(' ').filter(w => w.length > 0).length}
           </div>
-          <div className="text-xs text-black/60 font-semibold">Words</div>
+          <div className="text-xs text-palette-dark/60 font-semibold">Words</div>
         </Card>
       </div>
     </div>

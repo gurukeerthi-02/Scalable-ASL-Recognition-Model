@@ -99,7 +99,7 @@ export function CallControls({
         />
 
         {/* Divider */}
-        <div className="w-px h-8 sm:h-10 bg-black/10 mx-1 sm:mx-2" />
+        <div className="w-px h-8 sm:h-10 bg-palette-dark/10 mx-1 sm:mx-2" />
 
         {/* Leave Button */}
         <Tooltip>
@@ -112,7 +112,7 @@ export function CallControls({
               <PhoneOff className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent className="bg-black text-yellow-400 border-yellow-400/20 font-semibold">
+          <TooltipContent className="bg-palette-dark text-palette-offwhite border-palette-light/40 font-semibold">
             End Call
           </TooltipContent>
         </Tooltip>
@@ -138,27 +138,25 @@ function ControlToggle({
 }) {
 
   const getColors = () => {
-    if (active) {
-      if (variant === 'brand') {
-        // ASL mode active - yellow background
-        return 'bg-yellow-400 text-black shadow-lg shadow-yellow-400/30 hover:bg-yellow-500 border-2 border-yellow-500';
-      }
-      if (variant === 'warning') {
-        // Hand raised - yellow background
-        return 'bg-yellow-400 text-black shadow-lg shadow-yellow-400/30 hover:bg-yellow-500 border-2 border-yellow-500 animate-pulse';
-      }
-      if (variant === 'secondary') {
-        // Chat active
-        return 'bg-black text-yellow-400 shadow-lg hover:bg-black/90 border-2 border-black';
-      }
-      // Audio/Video active - white background
-      return 'bg-white text-black hover:bg-gray-100 border-2 border-gray-200 shadow-md';
+    // Audio/Video turned OFF
+    if (!active && variant === 'status') {
+      return 'bg-red-500 text-white border-0 hover:bg-red-600 shadow-md';
     }
-    // Inactive state
-    if (variant === 'secondary') {
-      return 'bg-black/5 text-black border-2 border-black/10 hover:bg-black/10 shadow-sm';
+    
+    // Everything else (Active AV, Toggles, etc) -> simple white background with black icons
+    let classes = 'bg-white text-black border border-gray-200 hover:bg-gray-100 shadow-sm';
+    
+    // Subtle indicators for active toggle states (Chat, ASL)
+    if (active && (variant === 'brand' || variant === 'secondary')) {
+      classes = 'bg-gray-100 text-black border border-gray-300 shadow-inner';
     }
-    return 'bg-red-500/20 text-red-600 border-2 border-red-500/40 hover:bg-red-500/30 shadow-sm';
+    
+    // Alert state for hand raised
+    if (active && variant === 'warning') {
+      classes = 'bg-white text-black border-2 border-black animate-pulse shadow-md';
+    }
+
+    return classes;
   };
 
   return (
@@ -172,7 +170,7 @@ function ControlToggle({
           {active ? activeIcon : inactiveIcon}
         </Button>
       </TooltipTrigger>
-      <TooltipContent className="bg-black text-yellow-400 border-yellow-400/20 font-semibold">
+      <TooltipContent className="bg-palette-dark text-palette-offwhite border-palette-light/40 font-semibold">
         {tooltip}
       </TooltipContent>
     </Tooltip>

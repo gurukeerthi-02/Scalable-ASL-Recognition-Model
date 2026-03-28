@@ -6,7 +6,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'ASL Meet | Modern Sign Language Video Calling',
+  title: 'Voiceout | Modern Sign Language Video Calling',
   description: 'Connect with others using real-time American Sign Language recognition and high-quality video conferencing.',
   viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
 };

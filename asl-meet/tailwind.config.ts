@@ -53,6 +53,12 @@ const config: Config = {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
+        palette: {
+          dark: '#355872',
+          medium: '#7AAACE',
+          light: '#9CD5FF',
+          offwhite: '#F7F8F0',
+        },
         chart: {
           '1': 'hsl(var(--chart-1))',
           '2': 'hsl(var(--chart-2))',
