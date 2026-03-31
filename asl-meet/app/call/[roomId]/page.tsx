@@ -7,7 +7,7 @@ import { CallControls } from '@/components/video/CallControls';
 import { ASLIndicator } from '@/components/video/ASLIndicator';
 import { useWebRTC } from '@/hooks/useWebRTC';
 import { useASLStream } from '@/hooks/useASLStream';
-import { useTTS } from '@/hooks/useTTS';
+import { useTTS, VoiceGender } from '@/hooks/useTTS';
 import { ASLRecognitionResponse } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent } from '@/components/ui/card';
@@ -42,13 +42,14 @@ export default function CallPage() {
   const [receivedMessages, setReceivedMessages] = useState<Array<{ peerId: string, text: string, timestamp: number, displayName?: string }>>([]);
   const [lastRecognizedLetter, setLastRecognizedLetter] = useState<string>('');
   const [voiceOutEnabled, setVoiceOutEnabled] = useState(false);
+  const [voiceGender, setVoiceGender] = useState<VoiceGender>('female');
   const [handRaised, setHandRaised] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   const [showASLPanel, setShowASLPanel] = useState(false);
   const lastRecognizedLetterRef = useRef<string>('');
 
   const { toast } = useToast();
-  const { speak } = useTTS({ enabled: true, rate: 1.0, volume: 1.0 });
+  const { speak } = useTTS({ enabled: true, rate: 0.92, pitch: 1.05, volume: 1.0, gender: voiceGender });
 
   useEffect(() => {
     const fetchRoomDetails = async () => {
@@ -454,7 +455,26 @@ export default function CallPage() {
                     <div className={`w-2 h-2 rounded-full ${voiceOutEnabled ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
                     <span className="text-sm font-bold text-palette-dark">ASL Interpreter & Chat</span>
                   </div>
-                  {voiceOutEnabled && <Badge className="text-[10px] bg-palette-dark text-palette-offwhite">Recognition Active</Badge>}
+                  <div className="flex items-center gap-2">
+                    {voiceOutEnabled && <Badge className="text-[10px] bg-palette-dark text-palette-offwhite">Recognition Active</Badge>}
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={() => setVoiceGender(g => g === 'female' ? 'male' : 'female')}
+                          className={`flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-semibold border transition-all ${
+                            voiceGender === 'female'
+                              ? 'bg-pink-100 text-pink-700 border-pink-300 hover:bg-pink-200'
+                              : 'bg-blue-100 text-blue-700 border-blue-300 hover:bg-blue-200'
+                          }`}
+                        >
+                          {voiceGender === 'female' ? '♀ Female' : '♂ Male'}
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent className="bg-palette-dark text-palette-offwhite border-palette-light/40 font-semibold">
+                        Switch TTS voice gender
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
                 </div>
                 <div className="flex-1 overflow-hidden">
                   <ASLIndicator
@@ -480,7 +500,19 @@ export default function CallPage() {
                       <div className={`w-2 h-2 rounded-full ${voiceOutEnabled ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
                       <span className="text-xs font-bold text-palette-dark uppercase tracking-wider">Interpreter & Chat</span>
                     </div>
-                    {voiceOutEnabled && <Badge className="text-[9px] bg-palette-dark text-palette-offwhite border-0 h-4">LIVE</Badge>}
+                    <div className="flex items-center gap-1.5">
+                      {voiceOutEnabled && <Badge className="text-[9px] bg-palette-dark text-palette-offwhite border-0 h-4">LIVE</Badge>}
+                      <button
+                        onClick={() => setVoiceGender(g => g === 'female' ? 'male' : 'female')}
+                        className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold border transition-all ${
+                          voiceGender === 'female'
+                            ? 'bg-pink-100 text-pink-700 border-pink-300'
+                            : 'bg-blue-100 text-blue-700 border-blue-300'
+                        }`}
+                      >
+                        {voiceGender === 'female' ? '♀' : '♂'}
+                      </button>
+                    </div>
                     <Button variant="ghost" size="icon" onClick={() => setShowASLPanel(false)} className="h-6 w-6 rounded-full">
                       <ChevronRight className="w-4 h-4 rotate-90" />
                     </Button>

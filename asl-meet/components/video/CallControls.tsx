@@ -144,16 +144,16 @@ function ControlToggle({
     }
     
     // Everything else (Active AV, Toggles, etc) -> simple white background with black icons
-    let classes = 'bg-white text-black border border-gray-200 hover:bg-gray-100 shadow-sm';
+    let classes = 'bg-white text-black border border-gray-200 hover:shadow-sm';
     
     // Subtle indicators for active toggle states (Chat, ASL)
     if (active && (variant === 'brand' || variant === 'secondary')) {
-      classes = 'bg-gray-100 text-black border border-gray-300 shadow-inner';
+      classes = 'bg-gray-900 text-white border border-gray-300 hover:shadow-inner';
     }
     
     // Alert state for hand raised
     if (active && variant === 'warning') {
-      classes = 'bg-white text-black border-2 border-black animate-pulse shadow-md';
+      classes = 'bg-gray-900 text-white border-0 hover:bg-gray-800 shadow-md';
     }
 
     return classes;
